@@ -1,0 +1,1289 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Michaelmas 2026</title>
+<meta name="description" content="Week-by-week planner for the Oxford MSc in Mathematical and Computational Finance, Michaelmas 2026.">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Michaelmas">
+<meta name="theme-color" content="#F3F4F7" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0E1117" media="(prefers-color-scheme: dark)">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+:root{color-scheme:light}
+/* Layout: slim header, three sticky tabs. Modules = one card per course for the chosen week; Timetable = Mon–Fri time grid; Exams = countdowns, rules and the revision checklist. Module colours act as diary tabs. */
+:root{
+  --bg:#F3F4F7; --card:#FFFFFF; --sunk:#ECEEF3; --ink:#141821; --ink-2:#4A5162; --ink-3:#737B8D; --rule:#E0E3EA; --rule-2:#C8CDD8;
+  --accent:#2340B8; --on-accent:#FFFFFF; --now:#CF3529;
+  --due:#965700; --due-bg:#FBEFD9; --crit:#B02F28; --crit-bg:#FBE5E2; --ok:#1B7A4B;
+  --sc:#6A4FD3; --fd:#0F7F5A; --nm:#9E6200; --sfda:#BD3570; --cpp:#08789F; --adm:#596274; --car:#8A672C;
+  --f-display:"Bricolage Grotesque","Segoe UI",system-ui,sans-serif;
+  --f-body:"Atkinson Hyperlegible",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --f-mono:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0E1117; --card:#161A22; --sunk:#1C212B; --ink:#E8EBF1; --ink-2:#AAB1C0; --ink-3:#7F879A; --rule:#252B37; --rule-2:#363D4C;
+  --accent:#93A6FF; --on-accent:#0E1117; --now:#FF6B5D;
+  --due:#E8A846; --due-bg:#33270F; --crit:#FF7A6E; --crit-bg:#3A1B19; --ok:#4CC58C;
+  --sc:#A693FF; --fd:#3FCB9E; --nm:#E5AA42; --sfda:#F27EAC; --cpp:#45BDEB; --adm:#9EA7B9; --car:#D1B07A;
+  color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0E1117; --card:#161A22; --sunk:#1C212B; --ink:#E8EBF1; --ink-2:#AAB1C0; --ink-3:#7F879A; --rule:#252B37; --rule-2:#363D4C;
+  --accent:#93A6FF; --on-accent:#0E1117; --now:#FF6B5D;
+  --due:#E8A846; --due-bg:#33270F; --crit:#FF7A6E; --crit-bg:#3A1B19; --ok:#4CC58C;
+  --sc:#A693FF; --fd:#3FCB9E; --nm:#E5AA42; --sfda:#F27EAC; --cpp:#45BDEB; --adm:#9EA7B9; --car:#D1B07A;
+  color-scheme:dark}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html{-webkit-text-size-adjust:100%}
+body{background:var(--bg);color:var(--ink);font:16px/1.5 var(--f-body)}
+button{font:inherit;color:inherit}
+button:focus-visible,textarea:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+h1,h2,h3,h4{margin:0}
+h1,h2,h3{font-family:var(--f-display);text-wrap:balance}
+.app{max-width:1180px;margin:0 auto;padding-inline:16px;padding-block:14px 56px}
+[data-m="SC"]{--m:var(--sc)} [data-m="FD"]{--m:var(--fd)} [data-m="NM"]{--m:var(--nm)} [data-m="SFDA"]{--m:var(--sfda)}
+[data-m="CPP"]{--m:var(--cpp)} [data-m="ADM"]{--m:var(--adm)} [data-m="CAR"]{--m:var(--car)}
+
+.top{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:6px 16px;padding-bottom:10px}
+.top h1{font-size:clamp(28px,4.4vw,40px);font-weight:800;letter-spacing:-.02em;line-height:1}
+.meta{display:flex;flex-wrap:wrap;gap:6px 14px;align-items:center;font-family:var(--f-mono);font-size:12.5px;color:var(--ink-2)}
+.meta b{color:var(--now);font-weight:600}
+.sync{padding:2px 9px;border-radius:999px;border:1px solid var(--rule-2)}
+.sync[data-s="on"]{color:var(--ok)}
+.sync[data-s="ro"],.sync[data-s="err"]{color:var(--due)}
+
+.tabs{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;display:flex;gap:6px;padding-block:8px;background:var(--bg);border-bottom:1px solid var(--rule)}
+.tab{flex:1;min-height:46px;border-radius:10px;border:1px solid var(--rule-2);background:var(--card);font-weight:700;font-size:15px;cursor:pointer}
+.tab[aria-selected="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+
+.weekbar{display:flex;align-items:center;gap:8px;margin-top:14px}
+.wbtn{width:46px;height:46px;flex:none;border-radius:10px;border:1px solid var(--rule-2);background:var(--card);cursor:pointer;font-size:20px;line-height:1}
+.wbtn[data-off="1"]{visibility:hidden}
+.wlabel{flex:1;min-width:0;text-align:center}
+.wlabel .l{font-family:var(--f-display);font-weight:800;font-size:23px;line-height:1.1}
+.wlabel .d{font-family:var(--f-mono);font-size:12.5px;color:var(--ink-2)}
+.wnow{min-height:46px;flex:none;padding:0 14px;border-radius:10px;border:1px solid var(--rule-2);background:transparent;cursor:pointer;font-family:var(--f-mono);font-size:12.5px}
+.wnow[data-here="1"]{color:var(--now);border-color:var(--now)}
+.wkhead{margin:12px 2px 14px;display:grid;gap:3px}
+.wkhead .ph{font-weight:700;font-size:17px;display:flex;flex-wrap:wrap;gap:4px 12px;align-items:baseline}
+.wkhead .cnt{font-family:var(--f-mono);font-size:12.5px;font-weight:400;color:var(--ink-2)}
+.tip{margin:0;font-size:14.5px;color:var(--ink-2);max-width:80ch}
+
+.chip{display:inline-flex;align-items:center;font-family:var(--f-mono);font-size:11.5px;font-weight:600;letter-spacing:.02em;padding:2px 7px;border-radius:6px;color:var(--m);background:color-mix(in srgb,var(--m) 14%,var(--card));white-space:nowrap}
+.tag{display:inline-block;font-size:11px;font-family:var(--f-mono);padding:1px 6px;border-radius:5px;border:1px solid var(--rule-2);color:var(--ink-3);white-space:nowrap}
+.tag.due{color:var(--due);background:var(--due-bg);border-color:transparent}
+.tag.crit{color:var(--crit);background:var(--crit-bg);border-color:transparent}
+
+.mods{display:grid;gap:12px}
+.mod{background:var(--card);border:1px solid var(--rule);border-radius:12px;padding:14px 16px 12px;min-width:0}
+.mb{display:grid;grid-template-columns:minmax(0,1fr);gap:0 26px}
+.mwork>.sub:first-child{margin-top:12px}
+@media (min-width:900px){
+  .mb{grid-template-columns:minmax(0,1.25fr) minmax(0,1fr)}
+  .mb.one{grid-template-columns:minmax(0,1fr)}
+  .mb:not(.one) .mwork{border-left:1px solid var(--rule);padding-left:22px}
+}
+.mh{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px 10px;align-items:center}
+.mh h3{font-size:19px;font-weight:700;display:flex;align-items:center;gap:8px;min-width:0}
+.mh .pc{font-family:var(--f-mono);font-size:12px;color:var(--ink-2);text-align:right}
+.bar{grid-column:1/-1;height:6px;border-radius:3px;background:var(--sunk);overflow:hidden;display:flex}
+.bar i{display:block;height:100%;background:var(--m)}
+.bar i.half{background:color-mix(in srgb,var(--m) 40%,var(--sunk))}
+.msyn{margin:10px 0 0;font-size:15.5px;line-height:1.55}
+.lay{margin-top:12px;padding:12px 14px;border-radius:10px;background:color-mix(in srgb,var(--m) 8%,var(--card))}
+.lay .lay-h{display:block;font-family:var(--f-mono);font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--m);margin-bottom:4px}
+.lay .lead{margin:0 0 8px;font-size:15.5px;font-weight:700;line-height:1.45}
+.lay ul{margin:0;padding-left:18px;display:grid;gap:7px}
+.lay li{font-size:15px;line-height:1.55;padding-left:2px}
+.lay li b{font-weight:700}
+.sub{margin-top:12px}
+.sub h4{font-family:var(--f-mono);font-size:11px;font-weight:600;color:var(--ink-3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:2px}
+.item{display:flex;align-items:center;gap:6px;min-height:46px;padding:1px 0;border-top:1px solid var(--rule)}
+.sub h4+.item{border-top:0}
+.item .txt{flex:1;min-width:0;display:flex;flex-wrap:wrap;align-items:baseline;gap:2px 8px}
+.item .main{min-width:0}
+.item .meta2{font-family:var(--f-mono);font-size:12px;color:var(--ink-3)}
+.item.top{align-items:flex-start;padding-block:6px}
+.item.top .ck{margin-top:-6px}
+.item[data-done="1"] .main.strike{color:var(--ink-3);text-decoration:line-through;text-decoration-color:var(--rule-2)}
+.n{font-family:var(--f-mono);font-size:12px;color:var(--ink-3)}
+.info{display:flex;gap:8px;align-items:baseline;padding:8px 0;border-top:1px solid var(--rule);font-size:14.5px}
+.sub h4+.info{border-top:0}
+.info .when{font-family:var(--f-mono);font-size:12px;color:var(--ink-2);white-space:nowrap}
+.srcs{display:flex;flex-wrap:wrap;gap:4px;flex-basis:100%;margin-top:3px}
+.sp{font-family:var(--f-mono);font-size:11.5px;padding:2px 7px;border-radius:5px;background:var(--sunk);color:var(--ink-2)}
+.sp.bk{background:color-mix(in srgb,var(--accent) 13%,var(--card));color:var(--accent)}
+.lt,.ck{flex:none;width:44px;height:44px;border:0;background:transparent;cursor:pointer;display:grid;place-items:center;padding:0;border-radius:8px}
+.lt::before{content:"";width:24px;height:24px;border-radius:50%;border:2px solid var(--m);box-sizing:border-box}
+.lt[data-s="1"]::before{background:linear-gradient(90deg,var(--m) 50%,transparent 50%)}
+.lt[data-s="2"]::before{background:var(--m)}
+.ck::before{content:"";grid-area:1/1;width:22px;height:22px;border-radius:6px;border:2px solid var(--m,var(--ink-3));box-sizing:border-box}
+.ck[data-s="1"]::before{background:var(--m,var(--ink-3))}
+.ck[data-s="1"]::after{content:"";grid-area:1/1;width:6px;height:11px;border:solid var(--card);border-width:0 2.5px 2.5px 0;box-sizing:border-box;transform:translateY(-1px) rotate(45deg)}
+.lt:hover,.ck:hover{background:var(--sunk)}
+.ro .lt,.ro .ck{cursor:default}
+.legend{font-family:var(--f-mono);font-size:12px;color:var(--ink-3);margin:0 2px 10px}
+.note{width:100%;min-height:84px;resize:vertical;border:1px solid var(--rule-2);border-radius:8px;background:var(--bg);color:var(--ink);font:15px/1.45 var(--f-body);padding:10px 12px;margin-top:4px}
+.note::placeholder{color:var(--ink-3)}
+.saved{font-family:var(--f-mono);font-size:11px;color:var(--ink-3);margin-left:6px;text-transform:none;letter-spacing:0}
+
+.ttc{display:flex;flex-wrap:wrap;gap:10px 22px;align-items:center;margin:12px 2px}
+.grps{display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center}
+.grp{display:flex;align-items:center;gap:6px}
+.seg{display:inline-flex;border:1px solid var(--rule-2);border-radius:8px;overflow:hidden;background:var(--card)}
+.seg button{min-width:46px;min-height:40px;border:0;background:transparent;cursor:pointer;font-family:var(--f-mono);font-size:13px}
+.seg button+button{border-left:1px solid var(--rule-2)}
+.seg button[aria-pressed="true"]{background:var(--accent);color:var(--on-accent)}
+.tog{min-height:40px;padding:0 14px;border-radius:999px;border:1px solid var(--rule-2);background:var(--card);cursor:pointer;font-family:var(--f-mono);font-size:12.5px}
+.tog[aria-pressed="false"]{background:transparent;color:var(--ink-3)}
+.hint{font-size:13px;color:var(--ink-3);margin:0 2px 10px}
+.tt{display:grid;grid-template-columns:46px repeat(5,minmax(0,1fr));border:1px solid var(--rule);border-radius:12px;background:var(--card);overflow:hidden}
+.tt>div{min-width:0}
+.c-dh{padding:8px;border-bottom:1px solid var(--rule);border-left:1px solid var(--rule);font-family:var(--f-mono);font-size:12px;color:var(--ink-2)}
+.c-dh b{display:block;font-family:var(--f-display);font-size:16px;color:var(--ink)}
+.c-dh.today,.c-dh.today b{color:var(--now)}
+.c-ad{padding:6px;border-bottom:1px solid var(--rule);border-left:1px solid var(--rule);display:grid;gap:4px;align-content:start}
+.c-bl{position:relative;border-left:1px solid var(--rule);height:calc(9 * var(--hh));background-image:repeating-linear-gradient(to bottom,var(--rule) 0 1px,transparent 1px var(--hh))}
+.c-bl.today{background-color:color-mix(in srgb,var(--now) 5%,var(--card))}
+.c-h0{border-bottom:1px solid var(--rule)}
+.c-hc{font-family:var(--f-mono);font-size:10.5px;color:var(--ink-3);text-align:right;padding-right:6px}
+.c-hl{height:calc(9 * var(--hh))}
+.c-hl span{display:block;height:var(--hh);padding-top:2px}
+.adi{display:flex;align-items:center;gap:2px;font-size:12.5px;line-height:1.3;border-radius:7px;padding:2px 6px 2px 2px;background:color-mix(in srgb,var(--m) 12%,var(--card))}
+.adi.plain{padding:6px 8px}
+.adi .ck{width:36px;height:36px}
+.adi .ck::before{width:18px;height:18px;border-radius:5px}
+.adi .ck[data-s="1"]::after{width:5px;height:9px}
+.adi b{font-weight:700}
+.adi .w{display:block;font-family:var(--f-mono);font-size:10.5px;color:var(--ink-2)}
+.ev{position:absolute;border-radius:7px;padding:3px 6px;background:color-mix(in srgb,var(--m) 16%,var(--card));border:1px solid color-mix(in srgb,var(--m) 45%,transparent);overflow:hidden;font-size:12.5px;line-height:1.3}
+.ev .t{display:block;font-family:var(--f-mono);font-size:10.5px;color:var(--ink-2)}
+.ev .ttl{display:block;font-weight:700}
+.ev .s{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;color:var(--ink-2)}
+.nowline{position:absolute;left:0;right:0;height:2px;background:var(--now);z-index:2}
+.ttempty{color:var(--ink-3);padding:6px 2px}
+@media (max-width:759px){
+  .tt{grid-template-columns:minmax(0,1fr)}
+  .tt>div{grid-column:1/-1!important;grid-row:auto!important}
+  .c-hc{display:none}
+  .c-dh,.c-ad,.c-bl{border-left:0}
+  .c-dh{border-top:1px solid var(--rule);background:var(--sunk)}
+  .c-bl{height:auto;background:none;display:grid;gap:6px;padding:6px;border-bottom:0}
+  .c-bl:empty{display:none}
+  .ev{position:static!important;width:auto!important;height:auto!important}
+  .nowline{display:none}
+  .c-ad:empty{display:none}
+}
+
+.exams{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,430px),1fr));gap:12px;margin-top:14px}
+.xc{background:var(--card);border:1px solid var(--rule);border-radius:12px;padding:16px;display:grid;gap:10px;align-content:start;min-width:0}
+.xc .row{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+.xc .days{font-family:var(--f-display);font-size:40px;font-weight:800;line-height:1;letter-spacing:-.02em}
+.xc .days small{font-size:15px;font-weight:500;color:var(--ink-2);letter-spacing:0}
+.xc h3{font-size:20px;font-weight:700}
+.xc .sub2{color:var(--ink-2);font-size:14.5px}
+.xc .when{font-family:var(--f-mono);font-size:12.5px;color:var(--ink-2)}
+.xc dl{display:grid;grid-template-columns:76px minmax(0,1fr);gap:6px 12px;margin:0;font-size:14.5px}
+.xc dt{font-family:var(--f-mono);font-size:11.5px;color:var(--ink-3);padding-top:3px;text-transform:uppercase;letter-spacing:.06em}
+.xc dd{margin:0}
+.xc .ph4{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.wkt{font-family:var(--f-mono);font-size:11px;color:var(--ink-3);white-space:nowrap}
+.panel{background:var(--card);border:1px solid var(--rule);border-radius:12px;padding:16px;margin-top:12px}
+.panel h2{font-size:20px;font-weight:800;margin-bottom:6px}
+.panel ul{margin:0;padding-left:18px;display:grid;gap:6px;font-size:15px}
+.yl{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));gap:0 24px}
+.yi{display:grid;grid-template-columns:118px minmax(0,1fr);gap:10px;padding:9px 0;border-top:1px solid var(--rule)}
+.yi .d{font-family:var(--f-mono);font-size:12.5px;color:var(--ink-2)}
+.src{font-size:13px;color:var(--ink-3);margin-top:22px;max-width:86ch}
+.set{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr));gap:12px;margin-top:14px;align-items:start}
+.set .panel{margin-top:0}
+.srow{width:100%;display:flex;align-items:center;justify-content:space-between;gap:14px;min-height:58px;padding:10px 0;border:0;border-top:1px solid var(--rule);background:transparent;text-align:left;cursor:pointer}
+.srow:first-child{border-top:0}
+.srow .lbl{min-width:0}
+.srow .lbl b{display:block;font-weight:700}
+.srow .lbl span{display:block;font-size:13.5px;color:var(--ink-2)}
+.sw{flex:none;width:52px;height:32px;border-radius:16px;background:var(--rule-2);position:relative;transition:background .15s}
+.sw::after{content:"";position:absolute;top:3px;left:3px;width:26px;height:26px;border-radius:50%;background:var(--card);box-shadow:0 1px 2px rgba(0,0,0,.3);transition:transform .15s}
+.srow[aria-checked="true"] .sw{background:var(--accent)}
+.srow[aria-checked="true"] .sw::after{transform:translateX(20px)}
+.syncnote{margin:0;font-size:14.5px;color:var(--ink-2)}
+.nobooks .sp.bk{display:none}
+body{margin:0;padding-bottom:env(safe-area-inset-bottom,0px);-webkit-tap-highlight-color:transparent}
+.bk-row{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;margin-top:10px}
+.bk-row .hint{margin:0}
+#update-pill{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(18px + env(safe-area-inset-bottom,0px));z-index:60;border:1px solid var(--accent);background:var(--card);color:var(--accent);font:700 14px var(--f-body);padding:12px 20px;border-radius:999px;box-shadow:0 6px 20px rgba(0,0,0,.18);cursor:pointer}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
+</style>
+</head>
+<body>
+
+<div class="app" id="app">
+  <header class="top">
+    <h1>Michaelmas 2026</h1>
+    <div class="meta"><span id="today">Today</span><span id="nextexam"></span><span class="sync" id="sync" data-s="wait">Connecting…</span></div>
+  </header>
+
+  <nav class="tabs" role="tablist" aria-label="Views">
+    <button class="tab" role="tab" id="t-modules" data-act="tab" data-tab="modules" aria-controls="p-modules">Modules</button>
+    <button class="tab" role="tab" id="t-timetable" data-act="tab" data-tab="timetable" aria-controls="p-timetable">Timetable</button>
+    <button class="tab" role="tab" id="t-exams" data-act="tab" data-tab="exams" aria-controls="p-exams">Exams</button>
+    <button class="tab" role="tab" id="t-settings" data-act="tab" data-tab="settings" aria-controls="p-settings">Settings</button>
+  </nav>
+
+  <div class="weekbar" id="weekbar">
+    <button class="wbtn" data-act="prev" aria-label="Previous week">‹</button>
+    <div class="wlabel"><div class="l" id="wl">0th week</div><div class="d" id="wd"></div></div>
+    <button class="wbtn" data-act="next" aria-label="Next week">›</button>
+    <button class="wnow" data-act="thisweek" id="wnow">This week</button>
+  </div>
+
+  <section id="p-modules" role="tabpanel" aria-labelledby="t-modules">
+    <div class="wkhead" id="wkhead"></div>
+    <p class="legend">Lectures: tap once for attended ◐, twice for reviewed ●. Pre-reading listed in a week is for the following week's lectures.</p>
+    <div class="mods" id="mods"></div>
+  </section>
+
+  <section id="p-timetable" role="tabpanel" aria-labelledby="t-timetable" hidden>
+    <p class="hint" id="tt-hint"></p>
+    <div id="tt"></div>
+  </section>
+
+  <section id="p-exams" role="tabpanel" aria-labelledby="t-exams" hidden>
+    <div class="exams" id="exams"></div>
+    <div class="panel">
+      <h2>Rules that matter</h2>
+      <ul>
+        <li>Distinction needs 70+ overall and at least 67 on every component. Merit needs 65+ with 50+ on each; a pass needs 50+ with 45+ on each.</li>
+        <li>Written exams are 45% of the degree (Paper A 4/13, B 2/13, C 4/13, D 3/13). The two C++ exams and two take-homes are 25%, a quarter each. The dissertation is 30%.</li>
+        <li>Late open-book submissions, including the Stats take-home, get a fail mark.</li>
+        <li>The exact days for Papers A and B appear on the University exam timetable, and a Notice to Candidates arrives before your first exam.</li>
+      </ul>
+    </div>
+    <div class="panel">
+      <h2>After January</h2>
+      <div class="yl" id="year"></div>
+    </div>
+  </section>
+
+  <section id="p-settings" role="tabpanel" aria-labelledby="t-settings" hidden>
+    <div class="set">
+      <div class="panel"><h2>Week summaries</h2><p class="hint">What each module card shows at the top in lecture weeks.</p><div id="set-sum"></div></div>
+      <div class="panel"><h2>Pre-reading</h2><div id="set-pre"></div></div>
+      <div class="panel"><h2>Class groups</h2><p class="hint">Both groups cover the same sheet. Pick yours to show only your slot in the timetable and module cards; leave unset to see both.</p><div class="grps" id="groups"></div></div>
+      <div class="panel"><h2>Timetable</h2><div id="set-tt"></div></div>
+      <div class="panel"><h2>Open on</h2><p class="hint">The tab you see when the page opens.</p><div id="set-open"></div></div>
+      <div class="panel"><h2>Backup</h2><p class="syncnote" id="set-sync"></p>
+        <div class="bk-row"><button class="tog" data-act="bk-copy">Copy backup</button><span class="hint" id="bk-msg"></span></div>
+        <textarea class="note" id="bk-text" placeholder="Paste a backup here to restore it"></textarea>
+        <div class="bk-row"><button class="tog" data-act="bk-restore" id="bk-restore">Restore from pasted backup</button></div>
+      </div>
+    </div>
+  </section>
+
+  <p class="src">Lecture and class times come from the MT26 timetable; assessment dates and rules from the 2026–27 course calendar and handbook. Items tagged <span class="tag">est.</span> follow last year's (MT25) pattern and may move; <span class="tag">TBC</span> items will be set by the lecturers. Stochastic Calculus topics follow last year's pace because the notes have no lecture breaks; Stats lecture splits inside each slide deck are approximate. Books: Shreve is <i>Stochastic Calculus for Finance II</i> (Springer, 2004) and Baxter &amp; Rennie is <i>Financial Calculus</i> (Cambridge); page numbers follow the standard printings. Note pages refer to last year's notes, so check them against this year's versions.</p>
+</div>
+
+<script>
+(function(){
+"use strict";
+
+/* ---------- reference data ---------- */
+var MODS = {
+  SC:{s:"SC", n:"Stochastic Calculus"}, FD:{s:"FD", n:"Financial Derivatives"}, NM:{s:"NM", n:"Numerical Methods"},
+  SFDA:{s:"Stats", n:"Statistics & Data Analysis"}, CPP:{s:"C++", n:"C++"},
+  ADM:{s:"General", n:"General"}, CAR:{s:"Careers", n:"Careers & seminars"}
+};
+var COURSES = ["SC","FD","NM","SFDA","CPP"];
+var LEC = {
+  SC:["Introduction; Brownian motion as a scaled random-walk limit","Filtrations; definitions of BM; martingale property; BM as a Gaussian process",
+      "Markov and strong Markov properties; stopping times; optional sampling","Reflection principle and first passage; scaling, time reversal and inversion",
+      "Quadratic variation of BM (L² and almost-sure proofs)","Cross-variation, total variation; Doob–Meyer, local martingales, Lévy's theorem",
+      "The Itô integral: simple to general integrands, Itô isometry","Itô's formula, multi-dimensional Itô, stochastic exponential",
+      "Change of measure: Radon–Nikodym, density process, Bayes rule","Girsanov's theorem",
+      "Girsanov in finance: Black–Scholes replication, incomplete markets","Feynman–Kac; Kolmogorov backward and forward equations",
+      "SDEs with explicit solutions (OU, GBM and others)","Strong vs weak solutions; Tanaka's SDE and local time",
+      "Existence and uniqueness: Lipschitz and linear growth, Gronwall","Picard iteration proof; counterexamples; course review"],
+  FD:["Markets, arbitrage and interest rates","Bonds, forwards, futures and options","Option bounds, put–call parity, one-period binomial model",
+      "Multi-period binomial model: backward induction and hedging","American options in trees; self-financing strategies; FTAP 1",
+      "Completeness and FTAP 2; GBM as the limit of trees","Itô's formula; the Black–Scholes model; BS PDE by replication",
+      "BS PDE to the heat equation; the risk-neutral measure","Risk-neutral pricing and the Black–Scholes formula",
+      "Exotic payoffs, implied volatility and the smile, Delta hedging","Gamma, Theta, Vega and Rho; Gamma and Vega hedging",
+      "Dividends and time-dependent parameters","Options on futures and Black's formula","American options in Black–Scholes: free boundary, smooth fit",
+      "Multi-asset Black–Scholes: basket, spread and exchange options","Change of numéraire; forward-start, compound, barrier and Asian options"],
+  NM:["Heat equation: analytic properties","Explicit, implicit and θ-schemes; von Neumann stability","Stability on the unit interval; truncation error",
+      "Lax equivalence; non-smooth data; Rannacher start-up","Black–Scholes PDE; Fokker–Planck duality","Discretising Black–Scholes: grid, boundaries, upwinding",
+      "Discontinuous payoffs, smoothing, adjoint pricing","Greeks by finite differences; FD recap (AAD extra slides non-examinable)",
+      "Random number generation","Monte Carlo integration: CLT error and confidence intervals","Variance reduction I: antithetics, control variates, importance sampling",
+      "Variance reduction II: stratified sampling, Latin hypercube","Quasi-Monte Carlo: discrepancy, lattice rules, Sobol","Greeks I: bumping and common random numbers",
+      "Greeks II: likelihood ratio and pathwise methods","SDE path simulation: Euler–Maruyama, weak and strong order"],
+  CPP:["Compilation model, first program, basic types","Control flow, operators, functions, argument passing","Object lifetime, references, pointers, smart pointers",
+      "Classes: constructors, destructors, operator overloading","Templates and static polymorphism","Linked lists and memory management (rule of three)",
+      "STL I: iterators and sequential containers","STL II: map, set, algorithms, lambdas","Vectors, matrices and linear algebra with uBLAS",
+      "Assertions, exceptions, unit tests; bit manipulation","Inheritance, virtual functions, slicing","Abstract classes, pimpl, templates vs inheritance",
+      "Object-oriented design; introducing MCLib","MCLib architecture: factories, paths, payoffs, statistics","Regression and Bermudan pricing in MCLib",
+      "Implementing payoffs in MCLib: European, Asian, knock-out"],
+  SFDA:["Basis expansions: polynomial and piecewise regression","Splines, bias–variance, non-linear least squares","Model comparison; kernel and local regression; WLS and GLS",
+      "Ridge regression","Shrinkage vs OLS; information criteria; the lasso","Cross-validation, normalisation and leakage","Stationarity, ACF, white noise",
+      "AR(1), AR(p) and MA(q) processes","ARMA: causality, invertibility, PACF, estimation","Unit roots (DF, ADF, KPSS) and ARIMA",
+      "Regression with ARIMA errors, seasonality, SARIMA, Box–Jenkins","ARCH and GARCH","AR-GARCH workflow in Python",
+      "Simulation forecasting and price distributions","PCA for yield curves and vol term structures","LLMs for market prediction (non-examinable)"]
+};
+var SLOTS = [
+  {m:"SC",dow:1,t:"09:00",e:"11:00",ln:[1,2]}, {m:"NM",dow:1,t:"11:00",e:"12:00",ln:[1]},
+  {m:"FD",dow:2,t:"09:00",e:"11:00",ln:[1,2]}, {m:"NM",dow:2,t:"11:00",e:"12:00",ln:[2]},
+  {m:"CPP",dow:3,t:"10:00",e:"12:00",ln:[1,2]}, {m:"SFDA",dow:4,t:"10:00",e:"12:00",ln:[1,2]}
+];
+var CLS = {
+  odd:{NM:{1:[2,"13:00","14:30","L3"],2:[3,"14:00","15:30","L3"]}, FD:{1:[2,"14:30","16:00","L3"],2:[5,"09:30","11:00","L5"]},
+       SFDA:{1:[4,"13:00","14:30","L6"],2:[5,"14:00","15:30","L6"]}, SC:{1:[4,"14:30","16:00","L6"],2:[5,"11:00","12:30","L6"]}},
+  w9:{FD:{1:[1,"09:00","10:30","L3"],2:[2,"09:00","10:30","L3"]}, NM:{1:[1,"10:30","12:00","L3"],2:[2,"10:30","12:00","L3"]},
+      SFDA:{1:[1,"13:00","14:30","L3"],2:[2,"13:00","14:30","L3"]}, SC:{1:[1,"15:00","17:00","L6"],2:[2,"15:00","17:00","L3"]}}
+};
+var CPPCLS = {2:"Setup; Practicals 1–2 set",3:"Practicals 1–2 discussed; 3–4 set",5:"Practicals 3–4 discussed; 5–6 set",7:"Practicals 5–6 discussed; 7 set",9:"Practical 7 discussed"};
+
+function D(y,m,d){return new Date(y,m-1,d);}
+function mt(w,dow){return new Date(2026,9,11+7*(w-1)+dow);}
+function addDays(d,n){return new Date(d.getFullYear(),d.getMonth(),d.getDate()+n);}
+function at(d,hhmm){var p=(hhmm||"00:00").split(":");return new Date(d.getFullYear(),d.getMonth(),d.getDate(),+p[0],+p[1]);}
+function mins(hhmm){var p=hhmm.split(":");return (+p[0])*60+(+p[1]);}
+var DOW=["Sun","Mon","Tue","Wed","Thu","Fri","Sat"], MON=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+function fmt(d){return DOW[d.getDay()]+" "+d.getDate()+" "+MON[d.getMonth()];}
+function rng(a,b){return a.getMonth()===b.getMonth()?a.getDate()+"–"+b.getDate()+" "+MON[b.getMonth()]:a.getDate()+" "+MON[a.getMonth()]+" – "+b.getDate()+" "+MON[b.getMonth()];}
+function sameDay(a,b){return a.getFullYear()===b.getFullYear()&&a.getMonth()===b.getMonth()&&a.getDate()===b.getDate();}
+function esc(s){return String(s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c];});}
+
+/* ---------- dated events ---------- */
+var EV = [];
+function ev(o){EV.push(o);return o;}
+var w, i;
+for (w=1; w<=8; w++) SLOTS.forEach(function(s){
+  var ns = s.ln.map(function(l){return 2*(w-1)+l;});
+  ev({k:"lec",m:s.m,date:mt(w,s.dow),t:s.t,e:s.e,room:"L3",wk:"w"+w,
+      title:MODS[s.m].s+" "+(ns.length>1?"L"+ns[0]+"–"+ns[1]:"L"+ns[0]),
+      sub:ns.map(function(n){return LEC[s.m][n-1];}).join(" · ")});
+});
+[3,5,7,9].forEach(function(w){
+  var tbl = w===9?CLS.w9:CLS.odd, sheet=(w-1)/2;
+  Object.keys(tbl).forEach(function(m){
+    [1,2].forEach(function(g){
+      var c=tbl[m][g];
+      ev({k:"cls",m:m,g:g,date:mt(w,c[0]),t:c[1],e:c[2],room:c[3],wk:"w"+w,title:MODS[m].s+" class · group "+g,sub:"Sheet "+sheet+" · "+c[3]});
+    });
+    if (m!=="NM") ev({k:"due",id:"hi:"+m+sheet,m:m,gm:m,dates:{1:mt(w,tbl[m][1][0]),2:mt(w,tbl[m][2][0])},tt:"before class",wk:"w"+w,src:"tbc",
+      title:"Hand in "+MODS[m].s+" Sheet "+sheet, sub:m==="SC"?"Starred questions 1–3":(m==="SFDA"?"Report within the page limit":"Before your class")});
+  });
+});
+for (i=1;i<=4;i++){
+  ev({k:"info",m:"NM",date:mt(2*i-1,1),wk:"w"+(2*i-1),src:"est",title:"NM Sheet "+i+" and Practical "+i+" online"});
+  ev({k:"due",id:"dl:nm"+i,m:"NM",date:mt(2*i,4),tt:"time TBC",wk:"w"+(2*i),src:"est",title:"NM Sheet "+i+" due",sub:"Solutions go online Friday"});
+}
+[2,3,5,7,9].forEach(function(w){
+  var d=w===9?mt(9,3):mt(w,1);
+  ev({k:"cls",m:"CPP",date:d,t:w===9?"09:00":"13:00",e:w===9?"11:00":"15:00",room:w===9?"L6":"L1",wk:"w"+w,title:"C++ class",sub:CPPCLS[w]+" · "+(w===9?"L6":"L1")});
+});
+[[3,"hi:cpp12","Submit C++ Practicals 1–2"],[5,"hi:cpp34","Submit C++ Practicals 3–4"],[7,"hi:cpp56","Submit C++ Practicals 5–6"],[9,"hi:cpp7","Submit C++ Practical 7"]].forEach(function(x){
+  ev({k:"due",id:x[1],m:"CPP",date:x[0]===9?mt(9,3):mt(x[0],1),tt:"before class",wk:"w"+x[0],src:"tbc",title:x[2],sub:"Output file and .cpp files on Moodle"});
+});
+ev({k:"info",m:"ADM",date:mt(1,1),t:"14:00",e:"15:00",room:"L1",wk:"w1",title:"Intro to PDE class",sub:"L1"});
+ev({k:"info",m:"ADM",date:mt(1,3),t:"14:00",e:"15:00",room:"L3",wk:"w1",title:"Intro to Probability class",sub:"L3"});
+ev({k:"info",m:"ADM",date:mt(1,4),t:"15:00",e:"16:00",room:"L3",wk:"w1",title:"Intro to Statistics class",sub:"L3"});
+for (w=1; w<=8; w++){
+  ev({k:"info",m:"CAR",date:mt(w,3),t:"13:00",e:"14:00",wk:"w"+w,title:"Interview prep",sub:"Jonathan Tam · L3"});
+  ev({k:"info",m:"CAR",date:mt(w,3),t:"15:30",e:"17:00",wk:"w"+w,title:"Careers seminar",sub:"L3"});
+  ev({k:"info",m:"CAR",date:mt(w,4),t:"16:00",e:"17:00",wk:"w"+w,title:"MCF seminar",sub:"Optional · L5"});
+}
+ev({k:"info",m:"CAR",date:D(2026,10,5),t:"09:00",e:"17:00",wk:"w0",title:"Careers in Quantitative Finance day"});
+ev({k:"info",m:"ADM",date:D(2026,10,6),t:"09:30",e:"11:00",wk:"w0",title:"Institute inductions"});
+ev({k:"info",m:"ADM",date:D(2026,10,6),t:"11:00",e:"13:00",wk:"w0",title:"Python intro",sub:"L1"});
+ev({k:"info",m:"ADM",date:D(2026,10,6),t:"14:00",e:"16:00",wk:"w0",title:"Python intro",sub:"L3"});
+ev({k:"info",m:"ADM",date:D(2026,10,6),t:"17:00",wk:"w0",title:"Welcome drinks",sub:"South Mezzanine"});
+ev({k:"info",m:"CAR",date:D(2026,10,9),t:"12:00",e:"15:00",wk:"w0",title:"Careers fair",sub:"Examination Schools"});
+ev({k:"exam",m:"SFDA",date:mt(9,3),tt:"12:00",wk:"w9",title:"Stats take-home opens",sub:"On Inspera; 48 hours"});
+ev({k:"due",id:"dl:th",m:"SFDA",date:mt(9,5),tt:"12:00",wk:"w9",crit:true,title:"Stats take-home deadline",sub:"Late counts as a fail"});
+ev({k:"exam",m:"ADM",date:D(2027,1,11),wk:"ex",src:"tbc",title:"Papers A and B this week",sub:"Days on the University exam timetable"});
+ev({k:"exam",m:"CPP",date:D(2027,1,15),tt:"time TBC",wk:"ex",title:"C++ Part I exam",sub:"3 hours on a computer"});
+
+/* ---------- per-module weekly synopsis ---------- */
+var MS = {
+ w0:{SC:"No lectures yet. The notes assume conditional expectation and σ-algebras from lecture 1, so start there.",
+     CPP:"Get the toolchain working before the first class in 2nd week; every practical runs on it.",
+     SFDA:"Set up a current Python stack; the course notebooks use deprecated calls."},
+ w1:{SC:"Brownian motion built properly: the random-walk limit, filtrations, the definition, and BM as a martingale and a Gaussian process.",
+     FD:"No-arbitrage, interest rates and the basic contracts: bonds, forwards, futures and options.",
+     NM:"Finite differences begin: the heat equation and the explicit, implicit and θ-schemes, with von Neumann stability.",
+     CPP:"How C++ compiles and links; types, control flow, functions and argument passing.",
+     SFDA:"Regression beyond straight lines: polynomial and piecewise bases, splines, and the bias–variance trade-off."},
+ w2:{SC:"Markov and strong Markov properties, stopping times and optional sampling, then the reflection principle and first-passage times.",
+     FD:"Model-free option bounds and put–call parity, then pricing in one-period and multi-period binomial models.",
+     NM:"When is a scheme stable, and how fast does it converge? Truncation error, Lax equivalence, and Rannacher start-up for rough payoffs.",
+     CPP:"References, pointers and object lifetime; classes and operator overloading.",
+     SFDA:"Model comparison, kernel smoothing, weighted least squares and ridge regression."},
+ w3:{SC:"Quadratic variation t and infinite total variation, which is why ordinary calculus fails for BM; then local martingales and Lévy's characterisation.",
+     FD:"American options in trees, self-financing strategies, the two fundamental theorems, and GBM as the limit of trees.",
+     NM:"Finite differences for the Black–Scholes PDE: grids, boundary conditions and upwinding.",
+     CPP:"Templates, and memory management through four versions of a linked list.",
+     SFDA:"The lasso, information criteria, and cross-validation without leakage."},
+ w4:{SC:"The Itô integral from simple to general integrands, the Itô isometry, and Itô's formula in one and several dimensions.",
+     FD:"The Black–Scholes model, the BS PDE by replication, and the change of variables to the heat equation.",
+     NM:"Discontinuous payoffs, adjoint pricing and Greeks by finite differences, closing the finite-difference half.",
+     CPP:"STL containers and iterators, algorithms and lambdas.",
+     SFDA:"Time series begin: stationarity, autocorrelation, and AR and MA processes."},
+ w5:{SC:"Change of measure: Radon–Nikodym derivatives, density processes, Bayes' rule, and Girsanov's theorem.",
+     FD:"Risk-neutral pricing and the Black–Scholes formula; digitals, implied volatility and the smile, and Delta hedging.",
+     NM:"Monte Carlo begins: random number generation, estimators, CLT error bars and confidence intervals.",
+     CPP:"Vectors, matrices and linear algebra with uBLAS; assertions, exceptions and unit tests.",
+     SFDA:"ARMA models (causality, invertibility, PACF, estimation), unit-root tests and ARIMA."},
+ w6:{SC:"Girsanov in finance (replication, complete and incomplete markets), then Feynman–Kac and the Kolmogorov equations.",
+     FD:"Gamma, Theta, Vega and Rho with Gamma and Vega hedging; dividends and time-dependent parameters.",
+     NM:"Variance reduction: antithetics, control variates, importance sampling, stratified sampling and Latin hypercube.",
+     CPP:"Inheritance, virtual functions and abstract classes, and when templates are the better tool.",
+     SFDA:"Seasonality, SARIMA and the Box–Jenkins loop, then ARCH and GARCH."},
+ w7:{SC:"SDEs: explicit solutions (OU, GBM and others), strong versus weak solutions, and Tanaka's SDE with local time.",
+     FD:"Options on futures and Black's formula; American options in Black–Scholes as a free-boundary problem.",
+     NM:"Quasi-Monte Carlo (lattice rules, Sobol, randomisation) and Greeks by bumping with common random numbers.",
+     CPP:"Object-oriented design and MCLib, the Monte Carlo library behind two of the four exam questions.",
+     SFDA:"AR-GARCH as a full Python workflow, with simulation-based forecasts."},
+ w8:{SC:"Existence and uniqueness of strong solutions: Lipschitz and linear growth, Gronwall, Picard iteration.",
+     FD:"Multi-asset Black–Scholes (basket, spread and exchange options), then change of numéraire and exotics: forward-start, compound, barrier and Asian.",
+     NM:"Likelihood-ratio and pathwise Greeks, then Euler–Maruyama with weak and strong convergence.",
+     CPP:"Bermudan pricing by regression in MCLib, and implementing payoffs including knock-outs.",
+     SFDA:"PCA for yield curves and volatility term structures. The final lecture, on LLMs, is non-examinable."},
+ w9:{SC:"No lectures. Class on Sheet 4.",FD:"No lectures. Class on Sheet 4.",NM:"No lectures. Class on Sheet 4.",
+     SFDA:"Class on Sheet 4, then the take-home from Wednesday noon to Friday noon.",CPP:"The class reviews Practical 7 on Wednesday morning."}
+};
+
+/* ---------- plain-English breakdowns: lead line + [idea, explanation] ---------- */
+var PLAIN = {
+ w1:{
+  SC:{lead:"What Brownian motion is, and the language used to describe random processes over time.",pts:[
+   ["From random walk to Brownian motion","Take a coin-flip walk and shrink the step size and the time step together, with the step proportional to √(time step). The limit is Brownian motion: a continuous path with independent, normally distributed changes."],
+   ["The definition","Brownian motion W starts at 0, has continuous paths, and W(t) − W(s) is normal with mean 0 and variance t − s, independent of everything before s."],
+   ["Filtrations","A filtration is the growing record of information available at each time. A process is ‘adapted’ if its value at time t is known from that record."],
+   ["Martingales","A martingale is a fair game: its best forecast of any future value is its current value. W is one, and so are W² − t and exp(aW − a²t/2)."],
+   ["Brownian motion as a Gaussian process","Any set of values W(t₁), …, W(tₙ) is jointly normal with mean 0 and covariance min(s, t), and that fully describes W."],
+   ["Transition density","The density for moving from x to y in time t is the heat kernel, the same function that solves the heat equation."]]},
+  FD:{lead:"The basic contracts, and the one assumption all pricing rests on.",pts:[
+   ["No arbitrage","There is no strategy that costs nothing, cannot lose and might win. Every price in the course follows from this."],
+   ["Interest and discounting","With continuous compounding £1 grows to e^{rT} by time T, so £1 paid at T is worth e^{−rT} today."],
+   ["Bonds","A zero-coupon bond pays £1 at time T; with a constant rate it is worth e^{−rT} today."],
+   ["Forwards","An agreement to buy at a fixed price K at time T. No arbitrage forces K = S₀e^{rT}: borrow, buy the asset now and hold it (cash and carry)."],
+   ["Futures","Like forwards, but gains and losses are settled daily through a margin account. With constant interest rates, futures and forward prices are equal."],
+   ["Options","A call is the right to buy at K, paying max(S_T − K, 0); a put is the right to sell, paying max(K − S_T, 0). European options can be exercised only at expiry, American options at any time before it."]]},
+  NM:{lead:"Solving the heat equation on a grid, and when the result is stable.",pts:[
+   ["The heat equation","u_t = u_xx spreads heat out and smooths bumps over time. It is the model problem for option-pricing PDEs."],
+   ["Finite differences","Replace derivatives with differences between neighbouring grid points, Δx apart in space and Δt apart in time."],
+   ["Explicit scheme","Each new value is computed directly from old ones. Cheap per step, but stable only if λ = Δt/Δx² ≤ ½, which forces tiny time steps."],
+   ["Implicit scheme","New values appear on both sides of the equation, so each step solves a tridiagonal linear system. Stable for any time step."],
+   ["θ-scheme and Crank–Nicolson","A weighted mix of explicit and implicit. θ = ½ (Crank–Nicolson) is second-order accurate in time."],
+   ["Von Neumann stability","Feed the scheme a single Fourier wave and check that its amplitude does not grow from one step to the next."]]},
+  CPP:{lead:"How a C++ program is built, and the basic syntax.",pts:[
+   ["Compiling and linking","Each .cpp file is compiled to an object file, and the linker joins them into one program. Headers (.hpp) declare what exists; include guards stop a header being included twice."],
+   ["Types","Every variable has a fixed type (int, double, bool and so on), checked before the program runs. const marks values that cannot change."],
+   ["Control flow","if/else, for and while loops, and switch on an enum: much like Python, with braces and semicolons."],
+   ["Passing arguments","Arguments are copied by default. A reference (&) lets a function change the caller's variable; a const reference avoids the copy without allowing changes."],
+   ["std::vector and sort","The standard resizable array and the standard sort. A range-based for loop iterates over a vector like Python's ‘for x in list’."]]},
+  SFDA:{lead:"Fitting curved relationships with linear regression.",pts:[
+   ["Basis expansions","Regress y on functions of x (x, x², x³, …) instead of x alone. The model is still linear in its coefficients, so least squares still works."],
+   ["Polynomials","High powers of x are strongly correlated with each other, which makes the fit unstable. Orthogonal polynomials fix this."],
+   ["Piecewise fits and splines","Fit simple curves between chosen points (knots) and join them smoothly. A cubic spline with K knots has K + 4 coefficients."],
+   ["Natural and smoothing splines","Natural splines are forced to be straight beyond the data, which stops wild behaviour at the ends. Smoothing splines penalise wiggliness directly."],
+   ["Bias–variance trade-off","More flexible models fit the training data better but eventually fit noise and predict new data worse. Judge models on test error, not training error."],
+   ["Non-linear least squares","When a model is not linear in its parameters, minimise the squared error numerically."]]}
+ },
+ w2:{
+  SC:{lead:"How Brownian motion behaves when you stop it at random times, and the formulas that gives for hitting levels.",pts:[
+   ["Markov property","Given where W is now, its future does not depend on how it got there. After any fixed time t, W(t + s) − W(t) is a fresh Brownian motion."],
+   ["Stopping times","A random time you can recognise when it happens using only information so far, such as ‘the first time W hits 1’. ‘The last time W hits 1’ is not one, because it needs knowledge of the future."],
+   ["Strong Markov property","Brownian motion also starts afresh from a stopping time, not just from a fixed time."],
+   ["Optional sampling","Stopping a martingale at a bounded stopping time leaves its expected value unchanged, so timing when you quit cannot beat a fair game. This gives hitting probabilities and expected hitting times."],
+   ["Reflection principle","Reflecting a path after it first hits level a gives another, equally likely path. Result: P(max of W up to t ≥ a) = 2P(W(t) ≥ a), which gives the laws of the running maximum and of first-passage times."],
+   ["Scaling and inversion","Speeding up time by c and shrinking space by √c gives another Brownian motion; so do −W and tW(1/t). These give quick proofs, such as W(t)/t → 0."]]},
+  FD:{lead:"Price limits that need no model, then pricing by copying payoffs in a binomial tree.",pts:[
+   ["Model-free bounds","No arbitrage alone gives max(S₀ − Ke^{−rT}, 0) ≤ C ≤ S₀ for a call, with similar bounds for puts."],
+   ["Put–call parity","C − P = S₀ − Ke^{−rT}, because a long call and a short put together pay exactly S_T − K."],
+   ["One-period binomial model","The stock moves to uS or dS. Hold Δ shares plus cash so the portfolio matches the option in both outcomes; the cost of that portfolio is the option's price."],
+   ["Risk-neutral probability","The price equals the discounted expected payoff using q = (e^{rδt} − d)/(u − d) instead of the real probability, which drops out entirely."],
+   ["Multi-period trees","Work backwards from expiry, pricing each node from the two after it. The hedge Δ changes from node to node: dynamic hedging."],
+   ["Martingale property","Under q, the discounted stock price is a martingale. This is the discrete version of the continuous-time theory to come."]]},
+  NM:{lead:"Proving that a scheme's answer converges to the true solution.",pts:[
+   ["Truncation error","How badly the true solution fails the discrete equations, found by Taylor expansion: O(Δt, Δx²) for the explicit scheme and O(Δt², Δx²) for Crank–Nicolson."],
+   ["Stability in two senses","On average (the l² norm), shown with Fourier analysis; and at the worst point (the l∞ norm), shown with a discrete maximum principle when all the scheme's coefficients are positive."],
+   ["Lax equivalence theorem","For a consistent scheme, stability is equivalent to convergence. You prove the two easier properties instead of convergence directly."],
+   ["Non-smooth data","Payoffs with a kink or a jump slow convergence, and Crank–Nicolson can produce oscillations that die away very slowly."],
+   ["Rannacher start-up","Take a few fully implicit half-steps at the start to damp those oscillations, then continue with Crank–Nicolson."]]},
+  CPP:{lead:"Where objects live in memory, and how to write your own types.",pts:[
+   ["Object lifetime","Local variables live on the stack and are destroyed at the end of their block. Objects created with new live on the heap until you delete them."],
+   ["References and pointers","A reference is another name for an existing object. A pointer holds an address, can be null, and can be moved to point elsewhere."],
+   ["Smart pointers","std::shared_ptr deletes its object automatically when the last pointer to it disappears, which prevents memory leaks."],
+   ["Classes","Bundle data with the functions that act on it. Constructors set an object up (preferably with initialiser lists) and destructors clean it up."],
+   ["Operator overloading","Define what +, == or << mean for your own class, so two ComplexNumber objects can be added with a + b."],
+   ["Functors","A class with operator() can be called like a function and can also carry state."]]},
+  SFDA:{lead:"Comparing models, smoothing data, handling unequal noise, and ridge regression.",pts:[
+   ["Model comparison","R² always rises when you add variables. Adjusted R², AIC and BIC penalise extra parameters, so they can compare models fairly."],
+   ["Kernel smoothing","Estimate y at each x as a weighted average of nearby points (Nadaraya–Watson). The bandwidth sets how wide ‘nearby’ is, trading bias against variance."],
+   ["Gauss–Markov theorem","When the noise has constant variance and no correlation, ordinary least squares is the best linear unbiased estimator."],
+   ["Weighted least squares","If the noise level varies from point to point, weight each point by 1/variance. With Gaussian noise this is also the maximum-likelihood answer."],
+   ["Ridge regression","Add a penalty λΣβ² to the squared error. The solution (XᵀX + λI)⁻¹Xᵀy shrinks the coefficients, accepting a little bias to cut variance a lot, which helps most when variables are correlated."]]}
+ },
+ w3:{
+  SC:{lead:"Why Brownian paths are too rough for ordinary calculus, and the classes of process stochastic calculus is built on.",pts:[
+   ["Quadratic variation","Chop [0, t] into small pieces and add up the squared changes of W. As the pieces shrink, the sum tends to t, not 0; for a smooth function it would vanish."],
+   ["Infinite total variation","The total distance a Brownian path travels on any interval is infinite, so ∫ f dW cannot be defined path by path like an ordinary integral."],
+   ["The rule (dW)² = dt","Cross-variation of W with time, and all higher variations, are zero. Only (dW)² survives and it equals dt: the rule behind Itô calculus."],
+   ["Local martingales","Processes that are martingales once stopped before they get too large. Every stochastic integral is one, but not every local martingale is a true martingale."],
+   ["Doob–Meyer decomposition","A process that tends to rise (a submartingale) splits uniquely into a martingale plus an increasing process. For M², the increasing part is the quadratic variation ⟨M⟩."],
+   ["Lévy's theorem","A continuous martingale starting at 0 whose quadratic variation is exactly t must be a Brownian motion: a quick way to recognise one."]]},
+  FD:{lead:"Early exercise in trees, and the two fundamental theorems of asset pricing.",pts:[
+   ["American options in trees","At each node the value is the larger of exercising now and continuing (the discounted expected value). American puts are sometimes exercised early."],
+   ["American calls","On a stock without dividends it is never optimal to exercise a call early, so the American call is worth the same as the European one."],
+   ["Self-financing strategies","Money is only moved between assets, never added or withdrawn. Arbitrage is defined in terms of these strategies."],
+   ["First fundamental theorem","There is no arbitrage exactly when a risk-neutral measure exists: one under which discounted prices are martingales."],
+   ["Second fundamental theorem","If every payoff can be replicated (the market is complete), that risk-neutral measure is unique."],
+   ["From trees to continuous time","As the time step shrinks, with u and d set from the volatility, the tree converges to geometric Brownian motion. Doubling strategies show why continuous-time trading needs extra restrictions."]]},
+  NM:{lead:"Applying finite differences to the Black–Scholes PDE.",pts:[
+   ["Time to maturity","Writing the PDE in τ = T − t turns ‘solve backwards from the payoff’ into a standard forward-in-time problem."],
+   ["Grid and boundaries","Cut the share price off at a large S_max and set boundary values there; a call, for example, behaves like S − Ke^{−rτ}. The cut-off error is small if S_max is large enough."],
+   ["Discretising","Central differences for V_S and V_SS give a tridiagonal system at each time step, just as for the heat equation."],
+   ["Stability and upwinding","A maximum principle needs every coefficient to be positive. Near S = 0 the drift term can break this, which one-sided differences (upwinding) fix."],
+   ["Duality","The Fokker–Planck equation for the probability density is the adjoint of the pricing PDE, which next week's adjoint pricing uses."]]},
+  CPP:{lead:"Generic code with templates, and managing memory safely.",pts:[
+   ["Templates","Write a function or class once with a type parameter T; the compiler generates a version for each type you use."],
+   ["Specialisation","Give a different implementation for one particular type."],
+   ["Compile-time computation","Templates can compute values while compiling; the course computes Fibonacci numbers this way."],
+   ["Linked lists, built four times","A chain of nodes, each pointing to the next. Version 1 leaks memory, version 2 deletes the same memory twice, version 3 fixes this with the rule of three, and version 4 uses shared_ptr."],
+   ["The rule of three","If a class needs its own destructor, it almost certainly needs its own copy constructor and copy assignment too."]]},
+  SFDA:{lead:"Choosing which variables to keep, and tuning models honestly.",pts:[
+   ["Why fewer variables can predict better","With p variables and n observations, OLS prediction error is about σ²(1 + p/n), so extra variables cost accuracy."],
+   ["Subset selection","Choose a subset of variables using Mallows' Cp, AIC or BIC."],
+   ["The lasso","Penalise λΣ|β| instead of λΣβ². Some coefficients become exactly zero, so the lasso selects variables as well as shrinking them."],
+   ["K-fold cross-validation","Split the data into K parts, fit on K − 1 and test on the one left out, rotate, and average the errors. Use it to choose λ."],
+   ["Normalisation and leakage","Standardise variables using statistics from the training folds only. Using the whole dataset leaks test information and flatters the results."],
+   ["Time series","Random folds break time order. With time series, train on the past and test on the future."]]}
+ },
+ w4:{
+  SC:{lead:"The Itô integral and Itô's formula, the core tools of the course.",pts:[
+   ["Integrals of step strategies","If you hold a fixed amount between trading dates, your gain is Σ (holding) × (change in W). The holding is set at the start of each interval, so it cannot anticipate the next move."],
+   ["General integrands","Approximate any adapted strategy by step strategies and take the limit. If E∫H² dt is finite, the result ∫H dW is a martingale with mean 0."],
+   ["Itô isometry","The variance of ∫H dW equals E[∫H² dt], which turns questions about random integrals into ordinary integrals."],
+   ["Itô's formula","For f(W): df = f′(W) dW + ½f″(W) dt. The extra ½f″ term comes from (dW)² = dt. Example: d(W²) = 2W dW + dt."],
+   ["Itô processes and several dimensions","The same rule for dX = μ dt + σ dW, and for correlated Brownian motions with dW₁ dW₂ = ρ dt. It gives the product rule for d(XY)."],
+   ["Stochastic exponential","dZ = θZ dW is solved by Z = exp(∫θ dW − ½∫θ² dt). Novikov's condition tells you when Z is a true martingale, which next week needs."]]},
+  FD:{lead:"The Black–Scholes model and its PDE.",pts:[
+   ["The model","The stock follows dS = μS dt + σS dW (geometric Brownian motion), and cash grows at the risk-free rate r."],
+   ["Itô for an option","For an option value V(t, S): dV = (V_t + μS V_S + ½σ²S² V_SS) dt + σS V_S dW."],
+   ["Delta hedging","Hold V_S shares against the option. The dW terms cancel, so the position is riskless and must earn r. That gives the Black–Scholes PDE: V_t + rS V_S + ½σ²S² V_SS − rV = 0."],
+   ["The real drift drops out","μ does not appear in the PDE; only r and σ matter."],
+   ["Heat equation","Substituting x = log S and rescaling time and value turns the PDE into the heat equation, whose solution is known."],
+   ["Risk-neutral measure","The same price comes from pretending the stock grows at r instead of μ, which is Stochastic Calculus's change of measure."]]},
+  NM:{lead:"Discontinuous payoffs, pricing many options at once, and Greeks from the grid.",pts:[
+   ["Discontinuous payoffs","A digital option's jump makes the error depend on where the strike falls between grid points, so convergence is erratic."],
+   ["Smoothing the payoff","Average the payoff over each grid cell (box or hat averaging) to restore regular convergence."],
+   ["Adjoint pricing","Solve the discrete Fokker–Planck equation once, forwards in time, then price many different payoffs from that one solution."],
+   ["Greeks from the grid","Delta and Gamma from differences between neighbouring grid points; Vega and Rho by differentiating the whole scheme; Theta from the PDE itself."],
+   ["Why Gamma needs care","Gamma's starting condition is a spike at the strike, so Rannacher start-up matters most here."]]},
+  CPP:{lead:"The Standard Template Library: containers, iterators and algorithms.",pts:[
+   ["Sequential containers","vector (contiguous memory, fast random access), deque (fast at both ends) and list (fast insertion in the middle)."],
+   ["Iterators","Generalised pointers that walk through any container. Algorithms work on ranges [begin, end). Erasing while looping needs care because it invalidates iterators."],
+   ["Associative containers","map stores key–value pairs sorted by key, like an ordered Python dict; set stores unique sorted values."],
+   ["Algorithms","Ready-made functions such as sort, find, count_if and transform that work on any container."],
+   ["Lambdas and std::function","Short inline functions such as [](double x){ return x*x; }, and a type that can hold any callable, used to pass payoffs around."]]},
+  SFDA:{lead:"The basics of time series: stationarity, autocorrelation, and AR and MA models.",pts:[
+   ["Stationarity","A series whose mean, variance and autocorrelations do not change over time. Most models assume it."],
+   ["Autocorrelation function (ACF)","The correlation between the series and itself k steps back, for each lag k."],
+   ["White noise and testing","White noise has no autocorrelation. The Ljung–Box test checks whether a series' autocorrelations are jointly zero."],
+   ["Random walk","X_t = X_{t−1} + noise is not stationary: its variance grows with time."],
+   ["AR(1)","X_t = φX_{t−1} + noise. Stationary if |φ| < 1; its autocorrelation decays like φ^k, and forecasts decay geometrically towards the mean."],
+   ["AR(p) and MA(q)","AR models regress on past values. MA models are weighted sums of recent shocks, and their ACF is exactly zero beyond lag q."]]}
+ },
+ w5:{
+  SC:{lead:"How to change the probabilities of events, and what that does to Brownian motion.",pts:[
+   ["Change of measure","A new probability Q re-weights outcomes: Q(A) = E[Z·1_A] for a positive random variable Z with mean 1. Events possible under P stay possible under Q."],
+   ["Radon–Nikodym derivative","Z = dQ/dP is the re-weighting factor, and expectations convert as E_Q[X] = E_P[ZX]."],
+   ["Density process","Z_t = E_P[Z | F_t] tracks the re-weighting as information arrives. It is a positive martingale."],
+   ["Bayes formula","A conditional expectation under Q is a re-weighted conditional expectation under P divided by Z_t. This is how you compute under Q in practice."],
+   ["Girsanov's theorem","Under Q with Z = exp(−∫θ dW − ½∫θ² dt), the process W_t + ∫θ ds is a Brownian motion. Changing measure shifts the drift and leaves volatility alone."]]},
+  FD:{lead:"The Black–Scholes formula, and how traders use it.",pts:[
+   ["Risk-neutral pricing","Price = e^{−r(T−t)} × expected payoff, with the stock drifting at r. Under this measure log S_T is normal."],
+   ["The formula","C = S·N(d₁) − Ke^{−r(T−t)}·N(d₂), derived by completing the square in a Gaussian integral. The put follows from put–call parity."],
+   ["Sanity checks","As volatility goes to zero the call price tends to max(S − Ke^{−r(T−t)}, 0); at expiry it equals the payoff."],
+   ["Digital options","Pay a fixed amount if S_T > K. A digital call paying 1 is worth e^{−r(T−t)}·N(d₂)."],
+   ["Implied volatility and the smile","Markets quote options by the σ that makes Black–Scholes match the price. Implied volatility varies with strike (the smile or skew), which shows the model is not exactly right."],
+   ["Delta hedging","Holding Δ = ∂V/∂S shares removes small price risk. Rebalancing only at discrete times leaves an error, driven by Gamma."]]},
+  NM:{lead:"Monte Carlo: estimating prices by simulation, and measuring the error.",pts:[
+   ["Random numbers","Computers generate pseudo-random uniforms with deterministic algorithms such as the Mersenne Twister, then turn them into normals with the inverse CDF or the Box–Muller transform."],
+   ["Correlated normals","Multiply independent normals by a Cholesky (or PCA) factor of the correlation matrix."],
+   ["The estimator","Simulate N independent outcomes, compute the discounted payoffs and average them. The average is unbiased."],
+   ["Error and confidence intervals","By the central limit theorem the error is about σ/√N. A 95% interval is the estimate ± 1.96 standard errors."],
+   ["Cost","Halving the error needs four times the samples. Monte Carlo still beats grid methods in high dimensions, because its error does not depend on the number of dimensions."]]},
+  CPP:{lead:"Linear algebra in C++, and writing code that checks itself.",pts:[
+   ["uBLAS","Boost's vector and matrix classes: element access, products with prod(), and rows and columns as views."],
+   ["Solving linear systems","LU decomposition to solve Ax = b and to invert matrices, the basis of least-squares regression."],
+   ["Assertions","assert(condition) stops a debug build when something that should be true is not."],
+   ["Exceptions","Throw an error object when something goes wrong and catch it higher up, instead of returning error codes."],
+   ["Unit tests","googletest runs small automated checks of each function's output. You write your own in Practical 5."],
+   ["Bit manipulation","Operating on the individual bits of integers with AND, OR, XOR and shifts."]]},
+  SFDA:{lead:"Fitting and forecasting ARMA models, and handling series that wander.",pts:[
+   ["ARMA(p, q)","Combines AR and MA terms. Causality and invertibility require the roots of its two polynomials to lie outside the unit circle."],
+   ["Identifying the order","An AR(p) series has a partial autocorrelation (PACF) that cuts off after lag p; an MA(q) series has an ACF that cuts off after lag q. Mixed models are chosen by AIC."],
+   ["Estimation","Yule–Walker equations (matching autocorrelations) for AR models, and maximum likelihood more generally."],
+   ["Forecasting","Forecasts and their error bands follow from the model's recursion; the uncertainty grows with the horizon."],
+   ["Unit roots","A series like log prices behaves like a random walk. The ADF test assumes a unit root and KPSS assumes stationarity, so read them together."],
+   ["ARIMA","Difference the series until it is stationary, then fit an ARMA model to the differences."]]}
+ },
+ w6:{
+  SC:{lead:"Using Girsanov to price options, and the link between expectations and PDEs.",pts:[
+   ["Risk-neutral measure","Choose θ = (μ − r)/σ, the market price of risk. Under the new measure the discounted stock is a martingale, and an option's price is its discounted expected payoff."],
+   ["Replication","The martingale representation theorem says any payoff driven by W is a stochastic integral, so it can be hedged exactly by trading the stock."],
+   ["Incomplete markets","With an extra source of randomness, such as random volatility, there are many risk-neutral measures and not every payoff can be hedged, so prices are not unique."],
+   ["Feynman–Kac","If X follows an SDE, u(t, x) = E[g(X_T) | X_t = x] solves a PDE; with discounting this gives Black–Scholes. Expectations and PDEs compute the same number."],
+   ["Kolmogorov equations","The transition density satisfies the backward equation in its starting point and the forward (Fokker–Planck) equation in its end point."]]},
+  FD:{lead:"The Greeks in detail, and adding dividends to the model.",pts:[
+   ["Gamma","How fast Delta changes. A delta-hedged position gains ½Γ(ΔS)² from price moves and pays Theta as time passes; the two balance when realised volatility equals implied."],
+   ["Theta, Vega and Rho","Sensitivity to time passing, to volatility and to interest rates. The Black–Scholes PDE links Theta, Delta and Gamma directly."],
+   ["Vega and Gamma are linked","In Black–Scholes, Vega = σS²(T − t)Γ."],
+   ["Gamma and Vega hedging","Shares cannot hedge these, so you add other options to the portfolio."],
+   ["Dividends","A continuous dividend yield q lowers the risk-neutral drift to r − q; in the formula, S becomes Se^{−q(T−t)}. Discrete dividends make the price drop on the payment date."],
+   ["Time-dependent parameters","If r and σ change over time, use the average rate and the root-mean-square volatility over the option's life."]]},
+  NM:{lead:"Variance reduction: the same accuracy from fewer simulations.",pts:[
+   ["Antithetic variables","Use each normal sample Z together with −Z. This helps when the payoff moves in opposite directions for the two."],
+   ["Control variates","Subtract λ(Y − E[Y]) for a related quantity Y whose mean you know exactly, such as the stock price. The best λ is Cov(X, Y)/Var(Y), which cuts the variance by a factor 1 − ρ²."],
+   ["Importance sampling","Sample from a distribution that puts more weight on the outcomes that matter, and correct with the likelihood ratio. Essential for rare events such as deep out-of-the-money options."],
+   ["Stratified sampling","Split the range of the random input into strata and sample each in fixed proportion. This removes the variance caused by how many samples land in each region."],
+   ["Latin hypercube","Stratification applied to each dimension separately, for problems with many random inputs."]]},
+  CPP:{lead:"Object-oriented programming: one interface, many implementations.",pts:[
+   ["Inheritance","A derived class such as CallPayoff reuses and extends a base class such as Payoff."],
+   ["Virtual functions","Calling a virtual method through a base-class pointer runs the derived class's version, chosen while the program runs. Mark overriding methods with override."],
+   ["Two pitfalls","Copying a derived object into a base object slices off the derived part, and a base class used this way needs a virtual destructor."],
+   ["Abstract classes","A class with a pure virtual function (= 0) cannot be created on its own; it defines an interface for others to implement."],
+   ["Pointer to implementation","Hide the implementation behind a pointer so a simple value class can hold any derived object, as in the course's Function/IFunction pair."],
+   ["Templates or inheritance?","Templates fix the type while compiling (fast, less flexible); virtual functions choose it while running (flexible, with a small cost)."]]},
+  SFDA:{lead:"Seasonality, the Box–Jenkins method, and volatility models.",pts:[
+   ["Regression with time-series errors","Regress on explanatory variables, such as temperature, and model the leftover errors as ARIMA."],
+   ["Seasonality","Capture regular cycles with seasonal dummies, sine and cosine (Fourier) terms, or seasonal ARIMA (SARIMA), which links each value to the same point in earlier cycles."],
+   ["Box–Jenkins","Identify a model from plots and the ACF and PACF, estimate it, check the residuals look like white noise, and repeat until they do."],
+   ["Volatility clustering","Returns are nearly uncorrelated, but their sizes are not: big moves follow big moves."],
+   ["ARCH and GARCH","Today's variance depends on yesterday's squared return (ARCH) and also on yesterday's variance (GARCH). GARCH(1,1) is stationary if α + β < 1, and it produces fat tails."],
+   ["Variance forecasts","GARCH forecasts move back towards the long-run variance at a rate set by α + β."]]}
+ },
+ w7:{
+  SC:{lead:"Stochastic differential equations: solving them, and what counts as a solution.",pts:[
+   ["SDEs","dX = μ(t, X) dt + σ(t, X) dW: a drift plus random kicks whose size is set by σ."],
+   ["Geometric Brownian motion","dS = μS dt + σS dW has the solution S_t = S₀ exp((μ − ½σ²)t + σW_t), found by applying Itô to log S."],
+   ["Ornstein–Uhlenbeck","dX = −κ(X − θ) dt + σ dW pulls X back towards θ. An integrating factor solves it; X_t is normal with explicit mean and variance. It underlies the Vasicek interest-rate model."],
+   ["Strong and weak solutions","A strong solution is built from the given Brownian motion. A weak solution only needs some probability space and some Brownian motion on which the equation holds, so it matches only in distribution."],
+   ["Tanaka's SDE","dX = sign(X) dW has a weak solution but no strong one, which shows the distinction is real."],
+   ["Local time","Tanaka's formula |W_t| = ∫sign(W) dW + L_t, where L_t measures the time W spends at 0. Girsanov can also build weak solutions by changing the drift."]]},
+  FD:{lead:"Options on futures, and American options in continuous time.",pts:[
+   ["Futures prices","Under the risk-neutral measure a futures price is a martingale: it has no drift."],
+   ["Black's formula","Black–Scholes with the futures price F in place of S and no drift: C = e^{−r(T−t)}[F·N(d₁) − K·N(d₂)]."],
+   ["Hedging with futures","A futures contract costs nothing to enter, so the hedge uses futures plus cash rather than shares."],
+   ["American options as optimal stopping","The value is the best expected discounted payoff over all exercise strategies (stopping times)."],
+   ["Free boundary and smooth fit","An American put is exercised below a critical price. Above it the value solves the Black–Scholes PDE; below it equals the payoff; at the boundary the value and its slope both match the payoff."],
+   ["Calls versus puts","Without dividends an American call is never exercised early, but an American put sometimes is."]]},
+  NM:{lead:"Quasi-Monte Carlo, and computing Greeks by simulation.",pts:[
+   ["Quasi-Monte Carlo","Replace random points with deterministic ones that fill space evenly, such as Sobol sequences and lattice rules. The error can fall almost as fast as 1/N instead of 1/√N."],
+   ["Koksma–Hlawka","The QMC error is at most (how irregular the function is) × (how unevenly the points are spread, the discrepancy)."],
+   ["Randomised QMC","Add a random shift or scrambling and repeat 10 to 32 times, so the spread of the results gives an error estimate."],
+   ["Greeks by bumping","Estimate Delta as [V(S + h) − V(S − h)]/2h from two simulations. Use the same random numbers for both, or the noise swamps the difference."],
+   ["Choosing the bump","A larger h adds bias and a smaller h adds variance; the best h balances the two. Discontinuous payoffs make this much worse."]]},
+  CPP:{lead:"Designing larger programs, and the course's Monte Carlo library, MCLib.",pts:[
+   ["Composing objects","Build a pricer from parts (a path generator, a payoff and a statistics collector) so each part can be swapped independently."],
+   ["What MCLib does","Simulates paths of an SDE and evaluates payoffs on them, keeping the model, the numerical scheme and the payoff separate."],
+   ["Its main pieces","A factory that produces simulated paths, payoff classes that turn a path into a value, and statistics classes that collect the mean and standard error."],
+   ["Paths on a dyadic grid","MCLib stores path values on time grids that repeatedly halve, which supports refining paths with a Brownian bridge."],
+   ["Why it matters","Questions 3 and 4 of the C++ exam are written inside MCLib, so you need to add to it fluently."]]},
+  SFDA:{lead:"A full workflow for modelling returns and volatility in Python.",pts:[
+   ["Mean and variance together","Fit an AR model for the mean of returns and a GARCH model for their variance at the same time (AR-GARCH), using the arch package."],
+   ["Diagnostics","Check that the standardised residuals look like white noise and that no ARCH effects remain."],
+   ["Forecasting by simulation","Simulate many future return paths from the fitted model to get forecast bands and a distribution for future prices, not just a single forecast."],
+   ["The model checklist","For every model, know its equations and assumptions, when it is stationary, its moments, how it is estimated and tested, and how to fit it in Python."]]}
+ },
+ w8:{
+  SC:{lead:"When an SDE has exactly one solution, and how to prove it.",pts:[
+   ["The conditions","If μ and σ are Lipschitz in x (they change at most at a fixed rate) and grow at most linearly, the SDE has exactly one strong solution."],
+   ["Picard iteration","Start from a guess, substitute it into the right-hand side to get a better one, and repeat. Under the conditions the iterates converge to the solution."],
+   ["Gronwall's inequality","If an error grows no faster than a constant times its own integral, it is bounded by an exponential, and it is zero if it starts at zero. This gives uniqueness."],
+   ["When the conditions fail","Solutions can stop being unique (dX = 3X^{2/3} dt from 0 has both X = 0 and X = t³) or blow up in finite time (dX = X² dt)."]]},
+  FD:{lead:"Options on several assets, a change-of-units trick, and exotic options.",pts:[
+   ["Several assets","Each stock has its own Brownian motion, correlated through dW₁ dW₂ = ρ dt. Pricing uses the two-dimensional Itô formula and PDE."],
+   ["Basket and spread options","Payoffs depend on a combination of assets, such as S₁ − S₂. Most have no closed-form price."],
+   ["Exchange options","The right to swap asset 2 for asset 1. Measuring prices in units of asset 2 reduces it to a one-asset Black–Scholes problem (Margrabe's formula)."],
+   ["Change of numéraire","Any positive traded asset can serve as the unit of account, with its own risk-neutral measure. A good choice simplifies the calculation."],
+   ["Exotic options","Forward-start (strike set later), compound (an option on an option), chooser (pick call or put later), barrier (switched on or off by hitting a level), and lookback and Asian (paying on the maximum or the average price)."]]},
+  NM:{lead:"Better Greeks from a single simulation, and simulating SDE paths.",pts:[
+   ["Pathwise method","Differentiate the payoff along each simulated path and average. Accurate, but it needs a continuous payoff."],
+   ["Likelihood ratio method","Differentiate the probability density instead, multiplying the payoff by a ‘score’ weight. It handles digital payoffs, but with higher variance."],
+   ["Euler–Maruyama","Simulate an SDE in small steps of size h: X_{n+1} = X_n + μh + σ√h·Z. Needed when the SDE has no exact solution."],
+   ["Weak and strong convergence","Errors in expected values shrink like h (weak order 1); errors in individual paths shrink like √h (strong order ½)."],
+   ["Spending the budget","For a fixed amount of computing, choose the number of paths and the step size together so the time-step bias and the statistical error are of similar size."]]},
+  CPP:{lead:"Pricing with MCLib: Bermudan options and your own payoffs.",pts:[
+   ["Regression for conditional expectations","Estimate the value of continuing by regressing future discounted payoffs on functions of today's price, across all simulated paths."],
+   ["Bermudan options","Exercisable on a set of dates. Work backwards through the dates, exercising on a path when the immediate payoff beats the regression's estimate of continuing."],
+   ["Writing payoffs","Implement a payoff class that reads the simulated path: the final value for a European option, the average for an Asian option."],
+   ["Knock-out options","The option dies if the path crosses a barrier. The knock-out condition keeps state along the path, so it must be reset for each new path."],
+   ["Time-dependent payoffs","Payoffs that use the path's values at several dates."]]},
+  SFDA:{lead:"Principal component analysis for financial curves.",pts:[
+   ["Principal components","The directions in the data that capture the most variance, found from the eigenvectors of the covariance matrix."],
+   ["Dimension reduction","For a yield curve, three components (level, slope and curvature) explain most daily moves."],
+   ["Volatility term structures","The same analysis applied to implied volatilities across expiries, as in Problem Sheet 4."],
+   ["Hedging with components","Hedge exposure to the main components instead of to every maturity separately."],
+   ["Final lecture","Using large language models to predict market moves. It is not examinable."]]}
+ }
+};
+
+/* ---------- weeks: phase, tip, pre-reading (for that week's lectures) and plan ---------- */
+var ORD=["0th","1st","2nd","3rd","4th","5th","6th","7th","8th","9th"];
+var WEEKS = [
+ {id:"w0",phase:"Induction week",tip:"Core lectures start on Monday 12 October. Get the C++ toolchain working this week; the first practical depends on it.",
+  pre:[["w0-sc-a","SC","Conditional expectation and σ-algebras, which the notes assume from day one",["Shreve ch. 2 · pp. 49–75"],3],
+       ["w0-sc-b","SC","Only if measure-theoretic probability is new: the basics",["Shreve §§1.1–1.3 · pp. 1–23"],2],
+       ["w0-cpp-guide","CPP","The course's setup guide, before installing anything",["CppInstructionsVSCode2025.pdf"],0.5]],
+  tasks:[["w0-cpp","CPP","Install the C++ toolchain (MinGW-w64, CMake, VS Code) and build the course's Sketches01 project. Keep the folder outside OneDrive",4],
+  ["w0-py","SFDA","Set up a current Python stack: numpy, pandas, statsmodels, arch, scikit-learn",1],
+  ["w0-moodle","ADM","Check Moodle for this year's notes and find the past-papers page",0.5],
+  ["w0-ipad","ADM","Set up iPad notebooks: one per module, one page per lecture",0.5]]},
+ {id:"w1",mtw:1,phase:"First lectures",tip:"Review each lecture the same day and write recall prompts as you go.",
+  pre:[["w1-sc","SC","Brownian motion: random-walk limit, filtrations, definition, martingale property",["Notes pp. 4–24","Shreve §§3.1–3.3 · pp. 83–98","Baxter & Rennie §3.1 · pp. 45–56"],3],
+       ["w1-fd","FD","No-arbitrage, interest rates and the basic contracts",["Notes ch. 1–2 · pp. 1–10","Baxter & Rennie ch. 1 · pp. 1–9"],1.5],
+       ["w1-nm","NM","Heat equation; explicit, implicit and θ-schemes",["Lecture 1–2 slides","trid.pdf"],1],
+       ["w1-cpp","CPP","Compilation model, types, functions",["Lecture 1–2 slides","Lecture01 and Lecture010203 code"],1],
+       ["w1-sfda","SFDA","Polynomial and piecewise regression, splines",["Deck 1&2 pp. 1–41","Python_lecture 1_Polynomials notebook"],1]],
+  tasks:[["w1-nm","NM","Start NM Sheet 1: Fourier modes, Taylor remainders, Crank–Nicolson truncation error",3],
+  ["w1-nmp","NM","NM Practical 1: explicit, implicit and Crank–Nicolson on the heat equation (optional, worth doing)",4],
+  ["w1-cpp","CPP","Build and run the Lecture 1–2 examples; check the debugger stops on a breakpoint",2],
+  ["w1-rev","ADM","Weekly review: recall prompts for this week's definitions and results",2]]},
+ {id:"w2",mtw:2,phase:"First hand-ins",tip:"NM Sheet 1 is due Thursday. The SC, FD and Stats sheets go in before next week's classes.",
+  pre:[["w2-sc","SC","Markov properties, stopping times, optional sampling, reflection principle",["Notes pp. 24–36","Shreve §§3.5–3.7 · pp. 107–115","Shreve §8.2 · pp. 340–345"],3],
+       ["w2-fd","FD","Option bounds, put–call parity, binomial models",["Notes ch. 3–4 · pp. 11–23","Baxter & Rennie §§2.1–2.2 · pp. 10–28"],2],
+       ["w2-nm","NM","Stability, truncation error, Lax equivalence, Rannacher",["Lecture 3–4 slides"],1],
+       ["w2-cpp","CPP","References, pointers and lifetime; classes",["Lecture 3–4 slides"],1],
+       ["w2-sfda","SFDA","Model comparison, kernels, WLS, ridge",["Deck 1&2 pp. 42–65","Deck 3&4"],1.5]],
+  tasks:[["w2-sc","SC","SC Sheet 1: starred Q1–3 for hand-in (martingales, stopped exponential martingale, Gaussian check); practise Q4–8",6],
+  ["w2-fd","FD","FD Sheet 1: payoff diagrams, arbitrage bounds, lognormal moments",3],
+  ["w2-sfda","SFDA","Stats Sheet 1: two-page report on electricity prices vs temperature, plus the Q2 code and Q3",6],
+  ["w2-cpp","CPP","C++ Practical 1: vector norms and Monte Carlo pricing of a European call",3],
+  ["w2-rev","ADM","Weekly review and recall",2]]},
+ {id:"w3",mtw:3,phase:"First classes",tip:"Every question is covered in class but only about two per sheet are marked, so bring the ones you got stuck on.",
+  pre:[["w3-sc","SC","Quadratic variation, local martingales, Lévy's theorem",["Notes pp. 37–51","Shreve §3.4 · pp. 98–107","Shreve §4.6.3 · pp. 168–172"],3],
+       ["w3-fd","FD","American options in trees, self-financing, the fundamental theorems; trees to GBM",["Notes ch. 5–6 · pp. 24–31","Baxter & Rennie §§2.3–2.4 · pp. 29–44","Shreve §3.2.7 · pp. 91–93"],2],
+       ["w3-nm","NM","Finite differences for Black–Scholes",["Lecture 5–6 slides","call_options.py"],1],
+       ["w3-cpp","CPP","Templates; linked lists and memory",["Lecture 5–6 slides","Lecture05 and Lecture06 code"],1.5],
+       ["w3-sfda","SFDA","Lasso, information criteria, cross-validation",["Deck 5&6","k-fold cross-validation note"],1.5]],
+  tasks:[["w3-nm","NM","NM Sheet 2: convection–diffusion stability, Lax closure, log-S transform",4],
+  ["w3-nmp","NM","NM Practical 2: Black–Scholes by Crank–Nicolson; compare Gamma with and without Rannacher",3],
+  ["w3-cpp","CPP","C++ Practical 2: Euler and Milstein steps; ComplexNumber operators",5],
+  ["w3-rev","ADM","Weekly review; first cumulative recall (weeks 1–2)",2]]},
+ {id:"w4",mtw:4,phase:"Itô week",tip:"Read SC's Itô formula and FD's Black–Scholes derivation side by side; they are the same calculation.",
+  pre:[["w4-sc","SC","The Itô integral and Itô's formula, in one and several dimensions",["Notes pp. 51–70","Shreve §§4.2–4.4 · pp. 125–153","Shreve §§4.6.1–4.6.2 · pp. 164–168","Baxter & Rennie §3.2 · pp. 57–62"],4],
+       ["w4-fd","FD","Black–Scholes model and PDE; heat equation; risk-neutral measure",["Notes ch. 7–8 · pp. 32–40","Shreve §§4.5.1–4.5.4 · pp. 153–159","Baxter & Rennie §§3.5–3.6 · pp. 80–91"],2],
+       ["w4-nm","NM","Discontinuous payoffs, adjoint pricing, Greeks by finite differences",["Lecture 7–8 slides"],1],
+       ["w4-cpp","CPP","STL containers, iterators, algorithms, lambdas",["Lecture 7–8 slides","Lecture0708 code"],1],
+       ["w4-sfda","SFDA","Stationarity, ACF, AR and MA processes",["Deck 7–9 pp. 1–50"],1.5]],
+  tasks:[["w4-sc","SC","SC Sheet 2: starred Q1–3 (quadratic variation, Wiener integrals, Lévy's theorem)",7],
+  ["w4-fd","FD","FD Sheet 2: one-period put, three-step call, digital via the binomial sum",3],
+  ["w4-sfda","SFDA","Stats Sheet 2: repossessions report, OLS vs WLS, AIC knot search",6],
+  ["w4-cpp","CPP","C++ Practicals 3–4: linked lists; rate functors, curve interpolation, sparse vectors",8],
+  ["w4-rev","ADM","Weekly review; cumulative recall (weeks 1–3)",2]]},
+ {id:"w5",mtw:5,phase:"Monte Carlo begins",tip:"SC's Girsanov this week is the theory behind NM's importance sampling next week.",
+  pre:[["w5-sc","SC","Change of measure and Girsanov's theorem",["Notes pp. 70–78","Shreve §1.6 · pp. 32–39","Shreve §5.2.1 · pp. 210–214","Baxter & Rennie §3.3 · pp. 63–75"],3],
+       ["w5-fd","FD","Risk-neutral pricing, the BS formula, implied vol, Delta hedging",["Notes ch. 9–10 · pp. 41–54","Shreve §§5.2.2–5.2.5 · pp. 214–221","Baxter & Rennie §3.7 · pp. 92–98"],2.5],
+       ["w5-nm","NM","Random numbers; Monte Carlo error and confidence intervals",["Lecture 9–10 slides","lec10.py"],1],
+       ["w5-cpp","CPP","uBLAS linear algebra; exceptions and unit tests",["Lecture 9–10 slides","Lecture09 and Lecture10 code"],1],
+       ["w5-sfda","SFDA","ARMA, unit roots, ARIMA",["Deck 7–9 pp. 51–96","Deck 10–12 pp. 1–37"],2]],
+  tasks:[["w5-nm","NM","NM Sheet 3: Box–Muller, sample sizes, control variates, importance sampling",4],
+  ["w5-nmp","NM","NM Practical 3: Monte Carlo basics and CLT confidence intervals",3],
+  ["w5-cpp","CPP","C++ Practical 5: regression pricing with uBLAS, correlated GBM, googletest. The first big step up",7],
+  ["w5-kit","SFDA","Stats toolkit v1: your own tested notebooks for regression, ridge, lasso and leak-free cross-validation",3],
+  ["w5-rev","ADM","Weekly review and recall",2]]},
+ {id:"w6",mtw:6,phase:"Greeks and GARCH",tip:"C++ Practical 6's payoff classes lead straight into MCLib, so don't skip it.",
+  pre:[["w6-sc","SC","Girsanov in finance; Feynman–Kac and the Kolmogorov equations",["Notes pp. 78–88","Shreve §§5.3–5.4 · pp. 221–234","Shreve §§6.2–6.4 · pp. 263–272","Baxter & Rennie §3.4 · pp. 76–79"],4],
+       ["w6-fd","FD","Gamma, Theta, Vega and Rho; dividends",["Notes ch. 11–12 · pp. 55–67","Shreve §4.5.5 · pp. 159–162","Shreve §5.5 · pp. 234–240","Baxter & Rennie §4.2 · pp. 106–111"],2],
+       ["w6-nm","NM","Variance reduction",["Lecture 11–12 slides"],1],
+       ["w6-cpp","CPP","Inheritance, virtual functions, abstract classes",["Lecture 11–12 slides","Lecture11 code","Examples_TemplateDesignPattern"],1],
+       ["w6-sfda","SFDA","SARIMA, Box–Jenkins, ARCH and GARCH",["Deck 10–12 pp. 38–77","SARIMAX notebook"],1.5]],
+  tasks:[["w6-sc","SC","SC Sheet 3: starred Q1–3 (2-d Girsanov, Itô moments, Novikov vs Kazamaki)",7],
+  ["w6-fd","FD","FD Sheet 3: American put tree, Itô on S^p, Greek PDE identities",4],
+  ["w6-sfda","SFDA","Stats Sheet 3: cross-validated regressions, productivity AR model, unit roots",6],
+  ["w6-cpp","CPP","C++ Practical 6: payoff functions with the Function/IFunction bridge",4],
+  ["w6-kit","SFDA","Stats toolkit v2: ARIMA/SARIMA fitting, ADF plus KPSS, residual diagnostics in one pipeline",3],
+  ["w6-rev","ADM","Weekly review and recall",2]]},
+ {id:"w7",mtw:7,phase:"MCLib arrives",tip:"Start C++ Practical 7 as soon as it's set; it is the closest thing to exam questions 3 and 4.",
+  pre:[["w7-sc","SC","SDEs: explicit solutions, strong vs weak, Tanaka",["Notes pp. 88–95","Shreve §6.2 · pp. 263–266","Shreve §6.5 · pp. 272–277"],2.5],
+       ["w7-fd","FD","Options on futures; American options in Black–Scholes",["Notes ch. 13–14 · pp. 68–77","Shreve §5.6 · pp. 240–248","Shreve §§8.2–8.5 · pp. 340–368"],2.5],
+       ["w7-nm","NM","Quasi-Monte Carlo; Greeks by bumping",["Lecture 13–14 slides"],1],
+       ["w7-cpp","CPP","Object-oriented design and MCLib",["Lecture 13–14 slides","Lecture1314 code","MCLibDoc class list"],2],
+       ["w7-sfda","SFDA","AR-GARCH workflow and simulation forecasts",["Deck 10–12 pp. 78–105","GARCH notebook"],1.5]],
+  tasks:[["w7-nm","NM","NM Sheet 4: shifted lattices, likelihood-ratio scores, two past exam questions",4],
+  ["w7-cpp","CPP","C++ Practical 7: MCLib basket and knock-out payoffs, finite-difference Greeks. The biggest practical",10],
+  ["w7-kit","SFDA","Stats toolkit v3: GARCH and PCA, plus a report template (one PDF, code in an appendix)",3],
+  ["w7-pp","ADM","Download past Papers A and B; tag each question by topic",1],
+  ["w7-tt","ADM","Check the exam timetable for the exact days of Papers A and B",0.25],
+  ["w7-rev","ADM","Weekly review and recall",2]]},
+ {id:"w8",mtw:8,phase:"Last lectures",tip:"Stats Sheet 4 is the closest thing to the take-home, so treat it as a rehearsal.",
+  pre:[["w8-sc","SC","Existence and uniqueness of strong solutions",["Notes pp. 95–102"],1.5],
+       ["w8-fd","FD","Multi-asset Black–Scholes; numéraire; barrier, lookback and Asian options",["Notes ch. 15–16 · pp. 78–90","Shreve §5.4.2 · pp. 226–228","Shreve §9.2 · pp. 376–381","Shreve §§7.3–7.5 · pp. 299–331","Baxter & Rennie §§6.3–6.4"],3],
+       ["w8-nm","NM","Likelihood-ratio and pathwise Greeks; Euler–Maruyama",["Lecture 15–16 slides"],1],
+       ["w8-cpp","CPP","Bermudan pricing and payoffs in MCLib",["Lecture 15–16 slides","Lecture1516 code","MCLib knock-out payoff headers"],2],
+       ["w8-sfda","SFDA","PCA for yield curves and vol term structures",["Deck 13–15 pp. 77–100"],1]],
+  tasks:[["w8-sc","SC","SC Sheet 4: starred Q1–3 (CIR moments, martingale representation, explosion)",6],
+  ["w8-fd","FD","FD Sheet 4: dividend Greeks, geometric Asian, perpetual American put",4],
+  ["w8-sfda","SFDA","Stats Sheet 4: T-bill heteroskedasticity, wheat-export seasonality and GARCH, USD/JPY vol PCA",7],
+  ["w8-dress","SFDA","Take-home dress rehearsal: six hours, one dataset, your toolkit and template, a finished PDF",6],
+  ["w8-rev","ADM","Weekly review and recall",2]]},
+ {id:"w9",mtw:9,phase:"Classes, then the take-home",tip:"Upload the take-home by Thursday night; any lateness counts as a fail.",
+  pre:[["w9-sfda","SFDA","Re-read your toolkit notebooks and the lecture checklist for every model",["Deck 10–12 p. 104"],1]],
+  tasks:[["w9-plan","SFDA","Take-home plan: Wednesday read and outline; Thursday analysis and write-up; upload Thursday night",0],
+  ["w9-check","SFDA","Before upload: one PDF named with your candidate number, no name, code in the appendix, AI-use form ready",0.5],
+  ["w9-ai","SFDA","Keep a running log of any AI use during the take-home; the Inspera form asks for it",0],
+  ["w9-rest","ADM","Rest on Saturday and Sunday",0]]},
+ {id:"v1",start:D(2026,12,13),lbl:"Vacation 1",phase:"Rest, then consolidate",tip:"Take a couple of days off, then consolidate the first half of each module.",
+  pre:[["v1-sc","SC","Exercises on Brownian motion and Itô",["Shreve ch. 3 exercises · pp. 117–124","Shreve ch. 4 exercises · pp. 189–208"],4],
+       ["v1-fd","FD","Discrete-time and Black–Scholes exercises; answers are at the back",["Baxter & Rennie ch. 2–3 exercises"],3]],
+  tasks:[["v1-rest","ADM","Two days off after the take-home",0],
+  ["v1-sc","SC","SC from Brownian motion to Itô: redo the starred questions closed-book",8],
+  ["v1-cpp","CPP","Redo C++ Practical 7 from scratch in three hours",5],
+  ["v1-nm","NM","One-page summary of the finite-difference half: schemes, stability, error results",4],
+  ["v1-fd","FD","FD chapters 1–8 from memory: bounds, binomial, BS PDE, heat equation",5]]},
+ {id:"v2",start:D(2026,12,20),lbl:"Vacation 2",phase:"Second halves",tip:"The second half of each module. Take Christmas off.",
+  pre:[["v2-sc","SC","Exercises on Girsanov, martingale representation and Feynman–Kac",["Shreve ch. 5 exercises · pp. 251–262","Shreve ch. 6 exercises · pp. 282–294"],4],
+       ["v2-fd","FD","American option exercises",["Shreve ch. 8 exercises · pp. 370–374"],2]],
+  tasks:[["v2-fd","FD","FD chapters 9–16: BS formula, Greeks, dividends, futures, American options, numéraire",6],
+  ["v2-sc","SC","SC Girsanov, Feynman–Kac and SDEs from memory",6],
+  ["v2-nm","NM","One-page summary of the Monte Carlo half: estimators, variance reduction, QMC, Greeks, Euler–Maruyama",4],
+  ["v2-off","ADM","Christmas days off",0]]},
+ {id:"v3",start:D(2026,12,27),lbl:"Vacation 3",phase:"Past papers",tip:"Past papers under time. Every format works out at about 45 minutes per question.",
+  tasks:[["v3-pb","NM","Paper B past paper, timed at 90 minutes, then self-mark",3],
+  ["v3-sc","SC","SC past questions by topic, 45 minutes each",5],
+  ["v3-fd","FD","FD past questions by topic, 45 minutes each",5],
+  ["v3-cpp","CPP","C++ mock 1: four questions in three hours (use the sample exam if it's released)",4],
+  ["v3-el","ADM","Choose your four Hilary electives (you'll be asked before term starts)",0.5]]},
+ {id:"v4",start:D(2027,1,3),lbl:"Vacation 4",phase:"Full mocks",tip:"Full timed mocks, then fix whatever they expose.",
+  tasks:[["v4-pa","ADM","Paper A mock, timed at three hours: two SC and two FD questions",3],
+  ["v4-pb","NM","Paper B mock 2, timed at 90 minutes",1.5],
+  ["v4-cpp","CPP","C++ mock 2: three hours, four questions",3],
+  ["v4-weak","ADM","Weak-spot sweep from your mock marking",6],
+  ["v4-log","ADM","Exam logistics: venue, candidate number, the Notice to Candidates",0.5]]},
+ {id:"ex",start:D(2027,1,10),lbl:"0th week, Hilary",phase:"Exams",tip:"Papers A and B this week (check the days), then the C++ exam on Friday.",
+  tasks:[["ex-light","ADM","The night before each paper: light recall only",0]]}
+];
+WEEKS.forEach(function(W, j){
+  if (W.id.charAt(0)==="w"){ var n=W.mtw||0; W.start=mt(n,0); W.lbl=ORD[n]+" week"; W.short="Wk "+n; }
+  else W.short = W.id==="ex" ? "Exam wk" : "Vac "+W.id.charAt(1);
+  W.end=addDays(W.start,6); W.idx=j;
+  W.kind=W.id.charAt(0)==="v"?"vac":(W.id==="ex"?"exam":"term");
+});
+function weekById(id){ for (var j=0;j<WEEKS.length;j++) if (WEEKS[j].id===id) return WEEKS[j]; return null; }
+var YEAR = [
+  ["17 Jan","Hilary term begins; lectures 18 Jan – 17 Mar"],["15 Feb – 5 Mar","C++ Part II lectures and practicals"],
+  ["Fri 12 Mar","C++ Part II exam"],["22–24 Mar","Deep Learning take-home, noon to noon"],["25 Mar – 9 Apr","Easter vacation"],
+  ["12–16 Apr","Papers C and D"],["From 19 Apr","Internships can start"],["Fri 2 Jul, noon","Dissertation deadline"]
+];
+var EXAMS = [
+  {m:"SFDA",name:"Stats take-home",sub:"Statistics and Financial Data Analysis",target:at(mt(9,3),"12:00"),when:"Wed 9 Dec 12:00 → Fri 11 Dec 12:00",
+   rows:[["Format","48-hour data-analysis project, submitted as one PDF on Inspera"],["Submit","Name the PDF with your candidate number; no name inside; code in an appendix; declare any AI use on the Inspera form"],["Late","Any lateness gets a fail mark"],["Weight","6.25% of the degree"]],
+   prep:["task:w5-kit","task:w6-kit","task:w7-kit","task:w8-sfda","task:w8-dress","pre:w9-sfda","task:w9-plan","task:w9-check","task:w9-ai","dl:th"]},
+  {m:"SC",name:"Paper A",sub:"Stochastic Calculus + Financial Derivatives",target:at(D(2027,1,11),"09:00"),when:"Week of 11 Jan · day TBC",
+   rows:[["Format","3 hours, closed book, in person"],["Questions","3 set per course; answer 2 from each, about 45 minutes per question"],["Weight","13.8% of the degree"]],
+   prep:["task:w7-pp","task:w7-tt","task:v1-sc","pre:v1-sc","task:v1-fd","pre:v1-fd","task:v2-sc","pre:v2-sc","task:v2-fd","pre:v2-fd","task:v3-sc","task:v3-fd","task:v4-pa","task:v4-weak"]},
+  {m:"NM",name:"Paper B",sub:"Numerical Methods",target:at(D(2027,1,11),"09:00"),when:"Week of 11 Jan · day TBC",
+   rows:[["Format","90 minutes, closed book, in person"],["Questions","3 set; answer 2, about 45 minutes each"],["Weight","6.9% of the degree"]],
+   prep:["task:w7-pp","task:v1-nm","task:v2-nm","task:v3-pb","task:v4-pb","task:v4-weak"]},
+  {m:"CPP",name:"C++ Part I exam",sub:"Financial Computing with C++",target:at(D(2027,1,15),"09:00"),when:"Fri 15 Jan · time TBC",
+   rows:[["Format","3 hours on a computer, online"],["Questions","All four compulsory: (1) write a function; (2) classes, possibly linear algebra, an algorithm; (3) an algorithm in MCLib; (4) a payoff in MCLib"],["Weight","6.25% of the degree"]],
+   prep:["task:w0-cpp","task:w2-cpp","hi:cpp12","task:w3-cpp","task:w4-cpp","hi:cpp34","task:w5-cpp","task:w6-cpp","hi:cpp56","task:w7-cpp","hi:cpp7","task:v1-cpp","task:v3-cpp","task:v4-cpp"]}
+];
+
+/* ---------- item index ---------- */
+var ITEM = {};
+WEEKS.forEach(function(W){
+  W.tasks.forEach(function(t){ ITEM["task:"+t[0]]={m:t[1],text:t[2],h:t[3],wk:W}; });
+  (W.pre||[]).forEach(function(p){ ITEM["pre:"+p[0]]={m:p[1],text:p[2],src:p[3],h:p[4],wk:W}; });
+});
+EV.forEach(function(e){ if (e.id) ITEM[e.id]={m:e.m,text:e.title,wk:weekById(e.wk),ev:e}; });
+for (var mm in LEC) for (var ln=1; ln<=16; ln++) ITEM["lec:"+mm+":"+ln]={m:mm,lec:true};
+
+/* ---------- state ---------- */
+var PREF_DEF = {tech:false, lay:true, layFirst:true, books:true, careers:true, openOn:"last"};
+function cleanPrefs(p){
+  var o={}; p=p||{};
+  ["tech","lay","layFirst","books","careers"].forEach(function(k){ o[k] = (typeof p[k]==="boolean") ? p[k] : PREF_DEF[k]; });
+  o.openOn = ["last","modules","timetable","exams"].indexOf(p.openOn)>=0 ? p.openOn : PREF_DEF.openOn;
+  return o;
+}
+var S = {ticks:{}, notes:{}, groups:{}, prefs:cleanPrefs({}), tab:"modules", week:null};
+var mode = "wait";
+var app = document.getElementById("app");
+function lsGet(k){try{var v=localStorage.getItem(k);return v?JSON.parse(v):null;}catch(e){return null;}}
+function lsSet(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}}
+(function(){var c=lsGet("mt26-cache"), u=lsGet("mt26-ui2");
+  if(c){S.ticks=c.ticks||{};S.notes=c.notes||{};S.groups=c.groups||{}; if(c.prefs) S.prefs=cleanPrefs(c.prefs);}
+  if(u){ if(u.tab) S.tab=u.tab; if(u.careers===false && !(c&&c.prefs)) S.prefs.careers=false; }})();
+function cache(){lsSet("mt26-cache",{ticks:S.ticks,notes:S.notes,groups:S.groups,prefs:S.prefs});}
+function saveUI(){lsSet("mt26-ui2",{tab:S.tab});}
+
+var now = new Date();
+var today = new Date(now.getFullYear(),now.getMonth(),now.getDate());
+var NOW_WK = (function(){
+  for (var j=0;j<WEEKS.length;j++){ if (today>=WEEKS[j].start && today<=WEEKS[j].end) return WEEKS[j].id; }
+  return today<WEEKS[0].start ? WEEKS[0].id : WEEKS[WEEKS.length-1].id;
+})();
+S.week = NOW_WK;
+var hashTab = (location.hash||"").replace("#","");
+if (["modules","timetable","exams","settings"].indexOf(hashTab)>=0) S.tab = hashTab;
+else if (S.prefs.openOn!=="last") S.tab = S.prefs.openOn;
+if (["modules","timetable","exams","settings"].indexOf(S.tab)<0) S.tab = "modules";
+function cur(){ return weekById(S.week); }
+function evDate(e){ if(e.dates){var g=S.groups[e.gm];return e.dates[g===2?2:1];} return e.date; }
+function inWeek(d,W){ return d>=W.start && d<addDays(W.end,1); }
+function evOrder(a,b){ var d=evDate(a)-evDate(b); if(d) return d; return (a.t||a.tt||"99").localeCompare(b.t||b.tt||"99"); }
+function groupOk(e){ return !e.g || !S.groups[e.m] || S.groups[e.m]===e.g; }
+
+/* ---------- small renderers ---------- */
+function chip(m){return '<span class="chip" data-m="'+m+'">'+esc(MODS[m].s)+'</span>';}
+function srcTag(e){return e.src==="est"?' <span class="tag">est.</span>':(e.src==="tbc"?' <span class="tag">TBC</span>':'');}
+function tickBtn(id,m,label,lec){
+  return '<button class="'+(lec?"lt":"ck")+'" data-m="'+m+'" data-act="'+(lec?"lec":"ck")+'" data-id="'+id+'" data-s="0" aria-label="'+esc(label)+'"></button>';
+}
+function srcPills(list){
+  return '<span class="srcs">'+list.map(function(s){ var bk=/^(Shreve|Baxter)/.test(s); return '<span class="sp'+(bk?' bk':'')+'">'+esc(s)+'</span>'; }).join("")+'</span>';
+}
+function preRow(p){
+  var id="pre:"+p[0];
+  return '<div class="item top" data-tick="'+id+'">'+tickBtn(id,p[1],p[2],false)+
+    '<span class="txt"><span class="main strike">'+esc(p[2])+'</span>'+(p[4]?'<span class="meta2">~'+p[4]+'h</span>':'')+srcPills(p[3])+'</span></div>';
+}
+function taskRow(t){
+  var id="task:"+t[0];
+  return '<div class="item" data-tick="'+id+'">'+tickBtn(id,t[1],t[2],false)+
+    '<span class="txt"><span class="main strike">'+esc(t[2])+'</span>'+(t[3]?'<span class="meta2">~'+t[3]+'h</span>':'')+'</span></div>';
+}
+function evWhen(e){ var d=evDate(e); return fmt(d)+(e.t?" "+e.t+(e.e?"–"+e.e:""):(e.tt?" · "+e.tt:"")); }
+function dueRow(e){
+  var tag = e.k==="exam"||e.crit ? ' <span class="tag crit">'+(e.k==="exam"?"assessment":"deadline")+'</span>' : (e.k==="due"?' <span class="tag due">due</span>':'');
+  if (!e.id) return '<div class="info"><span class="when">'+esc(evWhen(e))+'</span><span><b>'+esc(e.title)+'</b>'+tag+srcTag(e)+(e.sub?' · '+esc(e.sub):'')+'</span></div>';
+  return '<div class="item" data-tick="'+e.id+'">'+tickBtn(e.id,e.m,e.title,false)+
+    '<span class="txt"><span class="main strike"><b>'+esc(e.title)+'</b></span>'+tag+srcTag(e)+'<span class="meta2">'+esc(evWhen(e))+'</span>'+(e.sub?'<span class="meta2">'+esc(e.sub)+'</span>':'')+'</span></div>';
+}
+function lecRow(m,n){
+  var id="lec:"+m+":"+n;
+  return '<div class="item" data-tick="'+id+'">'+tickBtn(id,m,MODS[m].s+" lecture "+n+": "+LEC[m][n-1],true)+
+    '<span class="txt"><span class="n">L'+n+'</span><span class="main">'+esc(LEC[m][n-1])+'</span></span></div>';
+}
+
+/* ---------- Modules tab ---------- */
+function preGroups(W){
+  var out=[], N=WEEKS[W.idx+1];
+  if (W.id==="w0") out.push({lbl:"Foundations to read now", items:W.pre||[]});
+  if ((W.id==="w0" || (W.mtw>=1 && W.mtw<=7)) && N && N.pre) out.push({lbl:"Pre-read for "+N.lbl+" · before "+fmt(mt(N.mtw,1)), items:N.pre});
+  if ((W.id==="w9" || W.kind==="vac") && W.pre) out.push({lbl:W.id==="w9"?"Before the take-home":"Reading and exercises", items:W.pre});
+  return out;
+}
+function summaries(W,m,syn){
+  var lecWeek = W.mtw && W.mtw<=8;
+  var tech = (syn && (!lecWeek || S.prefs.tech)) ? '<p class="msyn">'+esc(syn)+'</p>' : '';
+  var P = (PLAIN[W.id]||{})[m];
+  var plain = (S.prefs.lay && P) ? '<div class="lay"><span class="lay-h">In plain English</span><p class="lead">'+esc(P.lead)+'</p><ul>'+
+    P.pts.map(function(x){ return '<li><b>'+esc(x[0])+(/[.?!]$/.test(x[0])?'':'.')+'</b> '+esc(x[1])+'</li>'; }).join("")+'</ul></div>' : '';
+  return S.prefs.layFirst ? plain+tech : tech+plain;
+}
+function modCard(W, m){
+  var parts=[], syn=(MS[W.id]||{})[m]||"";
+  if (!syn && W.id==="w0"){ var s0=SLOTS.filter(function(x){return x.m===m;})[0]; syn="First lecture "+fmt(mt(1,s0.dow))+", "+s0.t+"."; }
+  if (W.mtw && W.mtw<=8){
+    var when=SLOTS.filter(function(s){return s.m===m;}).map(function(s){return DOW[s.dow]+" "+s.t;}).join(" and ");
+    parts.push('<div class="sub"><h4>Lectures · '+esc(when)+'</h4>'+[2*W.mtw-1,2*W.mtw].map(function(n){return lecRow(m,n);}).join("")+'</div>');
+  }
+  var evs=EV.filter(function(e){ return e.m===m && e.k!=="lec" && inWeek(evDate(e),W) && groupOk(e); }).sort(evOrder);
+  var cls=evs.filter(function(e){return e.k==="cls";}), oth=evs.filter(function(e){return e.k!=="cls";});
+  var tasks=W.tasks.filter(function(t){return t[1]===m;});
+  if (cls.length || oth.length || tasks.length){
+    parts.push('<div class="sub"><h4>This week</h4>'+
+      cls.map(function(e){return '<div class="info"><span class="when">'+esc(evWhen(e))+'</span><span><b>'+esc(e.title)+'</b> · '+esc(e.sub||"")+'</span></div>';}).join("")+
+      oth.map(dueRow).join("")+tasks.map(taskRow).join("")+'</div>');
+  }
+  preGroups(W).forEach(function(gp){
+    var its=gp.items.filter(function(p){return p[1]===m;});
+    if (its.length) parts.push('<div class="sub"><h4>'+esc(gp.lbl)+'</h4>'+its.map(preRow).join("")+'</div>');
+  });
+  if (!parts.length && !syn) return "";
+  var sum = summaries(W,m,syn), one = !sum || !parts.length;
+  return '<article class="mod" data-m="'+m+'"><div class="mh"><h3>'+chip(m)+'<span>'+esc(MODS[m].n)+'</span></h3><span class="pc" data-mp="'+m+'"></span>'+
+    '<span class="bar" data-mbar="'+m+'" aria-hidden="true"><i></i><i class="half"></i></span></div>'+
+    '<div class="mb'+(one?' one':'')+'">'+(sum?'<div class="msum">'+sum+'</div>':'')+(parts.length?'<div class="mwork">'+parts.join("")+'</div>':'')+'</div></article>';
+}
+function generalCard(W){
+  var evs=EV.filter(function(e){ return e.m==="ADM" && (e.k==="exam"||e.k==="due") && inWeek(evDate(e),W); }).sort(evOrder);
+  var tasks=W.tasks.filter(function(t){return t[1]==="ADM";});
+  return '<article class="mod" data-m="ADM"><div class="mh"><h3>'+chip("ADM")+'<span>This week, generally</span></h3></div>'+
+    ((evs.length||tasks.length)?'<div class="sub"><h4>To do</h4>'+evs.map(dueRow).join("")+tasks.map(taskRow).join("")+'</div>':'')+
+    '<div class="sub"><h4>Notes <span class="saved" data-saved="'+W.id+'"></span></h4><textarea class="note" id="note-'+W.id+'" data-note="'+W.id+'" rows="3" placeholder="What clicked, what didn\'t, questions to bring to class"></textarea></div></article>';
+}
+function renderModules(){
+  var W=cur();
+  var cards = COURSES.map(function(m){return modCard(W,m);}).join("")+generalCard(W);
+  document.getElementById("mods").innerHTML = cards;
+  var ta=document.querySelector('textarea[data-note="'+W.id+'"]'); if (ta){ ta.value=S.notes[W.id]||""; ta.readOnly=(mode==="ro"); }
+  document.getElementById("wkhead").innerHTML = '<div class="ph">'+esc(W.phase)+'<span class="cnt" id="wkcount"></span></div><p class="tip">'+esc(W.tip||"")+'</p>';
+  applyTicks();
+}
+
+/* ---------- Timetable tab ---------- */
+var HH = 52, H0 = 9*60, H1 = 18*60;
+function renderGroups(){
+  var host=document.getElementById("groups"); if (!host) return;
+  host.innerHTML = ["SC","FD","NM","SFDA"].map(function(m){
+    var g=S.groups[m];
+    return '<span class="grp">'+chip(m)+'<span class="seg" role="group" aria-label="'+esc(MODS[m].n)+' class group">'+
+      [1,2].map(function(k){return '<button data-act="grp" data-m="'+m+'" data-g="'+k+'" aria-pressed="'+(g===k?"true":"false")+'">C'+k+'</button>';}).join("")+'</span></span>';
+  }).join("");
+}
+function renderTimetable(){
+  var W=cur(), mon=addDays(W.start,1), cells=[], any=false;
+  var unset=["SC","FD","NM","SFDA"].filter(function(m){return !S.groups[m];}).length;
+  document.getElementById("tt-hint").textContent = "All lectures are in L3. "+(unset?"Both class slots show until you set your groups in Settings.":"Showing your class groups; change them in Settings.")+(S.prefs.careers?"":" Careers events are hidden.");
+  cells.push('<div class="c-hc c-h0" style="grid-column:1;grid-row:1"></div>');
+  cells.push('<div class="c-hc c-h0" style="grid-column:1;grid-row:2;padding-top:8px">All day</div>');
+  var hrs=""; for (var h=9; h<18; h++) hrs+='<span>'+String(h).padStart(2,"0")+':00</span>';
+  cells.push('<div class="c-hc c-hl" style="grid-column:1;grid-row:3">'+hrs+'</div>');
+  for (var d=0; d<5; d++){
+    var day=addDays(mon,d), isT=sameDay(day,today), col=d+2, o=10+3*d;
+    var evs=EV.filter(function(e){ return sameDay(evDate(e),day) && groupOk(e) && (S.prefs.careers || e.m!=="CAR"); }).sort(evOrder);
+    var timed=evs.filter(function(e){return e.t && e.e;}), allday=evs.filter(function(e){return !(e.t && e.e);});
+    if (evs.length) any=true;
+    var lanes=[], placed=timed.map(function(e){
+      var s=Math.max(mins(e.t),H0), f=Math.min(mins(e.e),H1), L=0;
+      while (L<lanes.length && lanes[L]>s) L++;
+      lanes[L]=f; return {e:e,s:s,f:f,L:L};
+    });
+    var nL=Math.max(1,lanes.length);
+    var blocks=placed.map(function(p){
+      var e=p.e, top=(p.s-H0)/60*HH, ht=Math.max((p.f-p.s)/60*HH-2,22);
+      var sub = e.k==="lec" ? e.sub : (e.sub||"");
+      return '<div class="ev" data-m="'+e.m+'" style="top:'+top+'px;height:'+ht+'px;left:calc('+(p.L*100/nL)+'% + 3px);width:calc('+(100/nL)+'% - 6px)">'+
+        '<span class="t">'+esc(e.t+"–"+e.e)+'</span><span class="ttl">'+esc(e.title)+'</span>'+(sub?'<span class="s">'+esc(sub)+'</span>':'')+'</div>';
+    }).join("");
+    if (isT){ var nm=now.getHours()*60+now.getMinutes(); if (nm>=H0 && nm<=H1) blocks+='<div class="nowline" style="top:'+((nm-H0)/60*HH)+'px"></div>'; }
+    var ad=allday.map(function(e){
+      var w=(e.t||e.tt||"");
+      if (e.id) return '<div class="adi" data-m="'+e.m+'" data-tick="'+e.id+'">'+tickBtn(e.id,e.m,e.title,false)+'<span><b>'+esc(e.title)+'</b>'+srcTag(e)+'<span class="w">'+esc(w)+'</span></span></div>';
+      return '<div class="adi plain" data-m="'+e.m+'"><span><b>'+esc(e.title)+'</b>'+srcTag(e)+(w?'<span class="w">'+esc(w)+'</span>':'')+'</span></div>';
+    }).join("");
+    cells.push('<div class="c-dh'+(isT?" today":"")+'" style="grid-column:'+col+';grid-row:1;order:'+o+'"><b>'+DOW[day.getDay()]+' '+day.getDate()+'</b>'+MON[day.getMonth()]+(isT?' · today':'')+'</div>');
+    cells.push('<div class="c-ad" style="grid-column:'+col+';grid-row:2;order:'+(o+1)+'">'+ad+'</div>');
+    cells.push('<div class="c-bl'+(isT?" today":"")+'" style="grid-column:'+col+';grid-row:3;order:'+(o+2)+'">'+blocks+'</div>');
+  }
+  document.getElementById("tt").innerHTML = (any?'':'<p class="ttempty">Nothing timetabled this week. See the Modules tab for the plan.</p>')+
+    '<div class="tt" style="--hh:'+HH+'px">'+cells.join("")+'</div>';
+  applyTicks();
+}
+
+/* ---------- Exams tab ---------- */
+function renderExams(){
+  document.getElementById("exams").innerHTML = EXAMS.map(function(x){
+    var td=new Date(x.target.getFullYear(),x.target.getMonth(),x.target.getDate()), days=Math.round((td-today)/864e5);
+    var big = days>1?days+' <small>days</small>':(days===1?'Tomorrow':(days===0?'Today':'Done'));
+    var prep = x.prep.map(function(id){
+      var it=ITEM[id]; if(!it) return "";
+      var wk = it.wk ? it.wk.short : "";
+      return '<div class="item" data-tick="'+id+'">'+tickBtn(id,it.m,it.text,false)+'<span class="txt">'+chip(it.m)+'<span class="main strike">'+esc(it.text)+'</span><span class="wkt">'+esc(wk)+'</span></span></div>';
+    }).join("");
+    return '<article class="xc"><div class="row"><div><h3>'+esc(x.name)+'</h3><div class="sub2">'+esc(x.sub)+'</div><div class="when">'+esc(x.when)+'</div></div><span class="days">'+big+'</span></div>'+
+      '<dl>'+x.rows.map(function(r){return '<dt>'+esc(r[0])+'</dt><dd>'+esc(r[1])+'</dd>';}).join("")+'</dl>'+
+      '<div class="sub"><div class="ph4"><h4>Preparation</h4><span class="wkt" data-xc="'+x.name+'"></span></div>'+prep+'</div></article>';
+  }).join("");
+  document.getElementById("year").innerHTML = YEAR.map(function(y){return '<div class="yi"><span class="d">'+esc(y[0])+'</span><span>'+esc(y[1])+'</span></div>';}).join("");
+  applyTicks();
+}
+
+/* ---------- ticks, progress ---------- */
+function isDone(id){ var s=S.ticks[id]||0; return id.indexOf("lec:")===0 ? s===2 : s>=1; }
+function applyTicks(){
+  document.querySelectorAll("[data-act='lec'],[data-act='ck']").forEach(function(b){
+    var s=S.ticks[b.dataset.id]||0; b.setAttribute("data-s",String(s));
+    var base=b.getAttribute("aria-label").replace(/ \((not started|attended|reviewed|done|not done)\)$/,"");
+    b.setAttribute("aria-label", base+" ("+(b.dataset.act==="lec"?["not started","attended","reviewed"][s]:(s?"done":"not done"))+")");
+    if (b.dataset.act==="ck") b.setAttribute("aria-pressed", s?"true":"false");
+  });
+  document.querySelectorAll("[data-tick]").forEach(function(el){ el.setAttribute("data-done", isDone(el.dataset.tick)?"1":"0"); });
+  COURSES.forEach(function(m){
+    var rev=0, att=0, n;
+    for (n=1;n<=16;n++){ var s=S.ticks["lec:"+m+":"+n]||0; if (s===2) rev++; else if (s===1) att++; }
+    var other=Object.keys(ITEM).filter(function(id){ return !ITEM[id].lec && ITEM[id].m===m; });
+    var od=other.filter(isDone).length;
+    var pc=document.querySelector('[data-mp="'+m+'"]'); if (pc) pc.textContent = rev+"/16 lectures · "+od+"/"+other.length+" items";
+    var bar=document.querySelector('[data-mbar="'+m+'"]'); if (bar){ bar.children[0].style.width=(rev/16*100)+"%"; bar.children[1].style.width=(att/16*100)+"%"; }
+  });
+  var seen={}, tot=0, dn=0;
+  document.querySelectorAll("#mods [data-tick]").forEach(function(el){ var id=el.dataset.tick; if (seen[id]) return; seen[id]=1; tot++; if (isDone(id)) dn++; });
+  var wc=document.getElementById("wkcount"); if (wc) wc.textContent = tot ? dn+" of "+tot+" done" : "";
+  EXAMS.forEach(function(x){ var el=document.querySelector('[data-xc="'+x.name+'"]'); if (el){ var d=x.prep.filter(isDone).length; el.textContent=d+" of "+x.prep.length+" done"; } });
+}
+
+/* ---------- tabs and week navigation ---------- */
+function showTab(t){
+  S.tab=t; saveUI();
+  ["modules","timetable","exams","settings"].forEach(function(k){
+    document.getElementById("p-"+k).hidden = (k!==t);
+    document.getElementById("t-"+k).setAttribute("aria-selected", k===t?"true":"false");
+  });
+  document.getElementById("weekbar").hidden = (t==="exams" || t==="settings");
+}
+
+/* ---------- Settings tab ---------- */
+function swRow(k, title, desc){
+  return '<button class="srow" role="switch" aria-checked="'+(S.prefs[k]?"true":"false")+'" data-act="pref" data-k="'+k+'"><span class="lbl"><b>'+esc(title)+'</b>'+(desc?'<span>'+esc(desc)+'</span>':'')+'</span><span class="sw" aria-hidden="true"></span></button>';
+}
+function renderSyncNote(){
+  var el=document.getElementById("set-sync"); if (!el) return;
+  el.textContent = {wait:"Connecting to sync…", on:"Ticks, notes and these settings sync across your devices.", local:"Ticks, notes and settings are saved on this device. Copy a backup now and then, and keep it in Notes or Files; paste it here to restore, or to move to another device.", ro:"This is a read-only view, so changes here aren't saved.", err:"Sync is paused. Your changes are saved on this device for now."}[mode]||"";
+}
+function renderSettings(){
+  document.getElementById("set-sum").innerHTML =
+    swRow("tech","Lecture summary","The one-line technical summary of what the lectures cover")+
+    swRow("lay","Plain-English breakdown","A lead line and a list of each idea you'll learn that week, explained simply")+
+    swRow("layFirst","Plain English first","Put the plain-English box above the technical summary");
+  document.getElementById("set-pre").innerHTML = swRow("books","Book sections","Show the Shreve and Baxter & Rennie references beside the course notes");
+  document.getElementById("set-tt").innerHTML = swRow("careers","Careers events","Interview prep, careers seminars and the MCF seminar");
+  document.getElementById("set-open").innerHTML = '<span class="seg" role="group" aria-label="Open on">'+
+    [["last","Last used"],["modules","Modules"],["timetable","Timetable"],["exams","Exams"]].map(function(x){
+      return '<button data-act="openon" data-v="'+x[0]+'" aria-pressed="'+(S.prefs.openOn===x[0]?"true":"false")+'">'+x[1]+'</button>';
+    }).join("")+'</span>';
+  renderGroups(); renderSyncNote();
+}
+function applyPrefs(){ app.classList.toggle("nobooks", !S.prefs.books); }
+function prefsChanged(){ applyPrefs(); renderSettings(); renderModules(); renderTimetable(); cache(); if (mode!=="ro") store.settings(); }
+function renderWeekbar(){
+  var W=cur();
+  document.getElementById("wl").textContent = W.lbl;
+  document.getElementById("wd").textContent = rng(W.start,W.end)+(W.id===NOW_WK?" · this week":"");
+  var bs=document.querySelectorAll("#weekbar .wbtn");
+  bs[0].setAttribute("data-off", W.idx===0?"1":"0"); bs[1].setAttribute("data-off", W.idx===WEEKS.length-1?"1":"0");
+  document.getElementById("wnow").setAttribute("data-here", W.id===NOW_WK?"1":"0");
+}
+function goWeek(id){ S.week=id; renderWeekbar(); renderModules(); renderTimetable(); }
+
+document.addEventListener("click", function(evt){
+  var b = evt.target.closest("[data-act]"); if (!b) return;
+  var act=b.dataset.act;
+  if (act==="tab"){ showTab(b.dataset.tab); return; }
+  if (act==="prev"){ var W=cur(); if (W.idx>0) goWeek(WEEKS[W.idx-1].id); return; }
+  if (act==="next"){ var W2=cur(); if (W2.idx<WEEKS.length-1) goWeek(WEEKS[W2.idx+1].id); return; }
+  if (act==="thisweek"){ goWeek(NOW_WK); return; }
+  if (act==="bk-copy"){ copyBackup(); return; }
+  if (act==="bk-restore"){ restoreBackup(); return; }
+  if (act==="pref"){ var k=b.dataset.k; S.prefs[k]=!S.prefs[k]; prefsChanged(); return; }
+  if (act==="openon"){ S.prefs.openOn=b.dataset.v; prefsChanged(); return; }
+  if (mode==="ro"){ flash("This view is read-only"); return; }
+  if (act==="lec" || act==="ck"){
+    var id=b.dataset.id, s=S.ticks[id]||0;
+    s = act==="lec" ? (s+1)%3 : (s?0:1);
+    if (s) S.ticks[id]=s; else delete S.ticks[id];
+    applyTicks(); cache(); store.tick(id); return;
+  }
+  if (act==="grp"){
+    var m=b.dataset.m, g=+b.dataset.g;
+    if (S.groups[m]===g) delete S.groups[m]; else S.groups[m]=g;
+    renderGroups(); renderTimetable(); renderModules(); cache(); store.settings(); return;
+  }
+});
+var noteTimers = {};
+document.addEventListener("input", function(evt){
+  var ta=evt.target; if (!ta.matches || !ta.matches("textarea[data-note]")) return;
+  if (mode==="ro") return;
+  var w=ta.dataset.note; S.notes[w]=ta.value;
+  clearTimeout(noteTimers[w]);
+  var sv=document.querySelector('[data-saved="'+w+'"]'); if (sv) sv.textContent="saving…";
+  noteTimers[w]=setTimeout(function(){ delete noteTimers[w]; cache(); store.note(w); }, 900);
+});
+function flash(msg){ var el=document.getElementById("sync"); el.textContent=msg; setTimeout(function(){ setSync(mode); },1800); }
+function setSync(m){
+  mode=m;
+  var el=document.getElementById("sync");
+  el.textContent = {wait:"Connecting…", on:"Synced", local:"Saved on this device", ro:"Read-only", err:"Sync paused"}[m]||"";
+  el.setAttribute("data-s", m);
+  app.classList.toggle("ro", m==="ro");
+  document.querySelectorAll("textarea[data-note]").forEach(function(t){ t.readOnly=(m==="ro"); });
+  renderSyncNote();
+}
+
+/* ---------- storage: this device (localStorage via cache()) ---------- */
+var store = {
+  tick:function(){},
+  note:function(w){ var sv=document.querySelector('[data-saved="'+w+'"]'); if (sv) sv.textContent="saved"; },
+  settings:function(){}
+};
+
+/* ---------- backup ---------- */
+function backupText(){ return JSON.stringify({app:"mcf-planner", v:1, at:new Date().toISOString(), ticks:S.ticks, notes:S.notes, groups:S.groups, prefs:S.prefs}); }
+function copyBackup(){
+  var msg=document.getElementById("bk-msg"), ta=document.getElementById("bk-text"), data=backupText();
+  function fallback(){ ta.value=data; ta.focus(); ta.select(); msg.textContent="Copy the selected text below and keep it somewhere safe."; }
+  if (navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(data).then(function(){ msg.textContent="Copied. Paste it into Notes or Files to keep it."; }, fallback);
+  } else fallback();
+}
+var restoreArmed = 0;
+function restoreBackup(){
+  var ta=document.getElementById("bk-text"), msg=document.getElementById("bk-msg"), btn=document.getElementById("bk-restore"), d=null;
+  try { d=JSON.parse(ta.value); } catch(e){ d=null; }
+  if (!d || typeof d!=="object" || !d.ticks || typeof d.ticks!=="object"){ msg.textContent="That isn't a valid backup. Paste the whole text you copied."; return; }
+  if (Date.now()-restoreArmed > 6000){ restoreArmed=Date.now(); btn.textContent="Tap again to replace your current progress"; return; }
+  restoreArmed=0; btn.textContent="Restore from pasted backup";
+  var t={}; Object.keys(d.ticks).forEach(function(k){ var v=d.ticks[k]; if ((v===1||v===2) && ITEM[k]) t[k]=v; });
+  var n={}; Object.keys(d.notes||{}).forEach(function(k){ if (weekById(k)) n[k]=String(d.notes[k]||""); });
+  var g={}; ["SC","FD","NM","SFDA"].forEach(function(m){ var x=(d.groups||{})[m]; if (x===1||x===2) g[m]=x; });
+  S.ticks=t; S.notes=n; S.groups=g; if (d.prefs) S.prefs=cleanPrefs(d.prefs);
+  cache(); applyPrefs(); renderSettings(); renderModules(); renderTimetable(); renderExams();
+  ta.value=""; msg.textContent="Restored "+Object.keys(t).length+" ticks and "+Object.keys(n).length+" notes.";
+}
+
+/* ---------- updates: a new deploy shows a pill; tapping it reloads ---------- */
+function showUpdatePill(reg){
+  if (document.getElementById("update-pill")) return;
+  var pill=document.createElement("button");
+  pill.id="update-pill"; pill.type="button"; pill.textContent="An update is ready. Tap to refresh";
+  pill.addEventListener("click", function(){
+    pill.disabled=true; pill.textContent="Refreshing…";
+    if (reg.waiting) reg.waiting.postMessage({type:"SKIP_WAITING"});
+    setTimeout(function(){ window.location.reload(); }, 2500);
+  });
+  document.body.appendChild(pill);
+}
+async function initUpdates(){
+  var reg = await navigator.serviceWorker.register("sw.js");
+  if (reg.waiting && navigator.serviceWorker.controller) showUpdatePill(reg);
+  reg.addEventListener("updatefound", function(){
+    var sw=reg.installing; if (!sw) return;
+    sw.addEventListener("statechange", function(){ if (sw.state==="installed" && navigator.serviceWorker.controller) showUpdatePill(reg); });
+  });
+  var reloading=false;
+  navigator.serviceWorker.addEventListener("controllerchange", function(){ if (reloading) return; reloading=true; window.location.reload(); });
+  var check=function(){ reg.update().catch(function(){}); };
+  document.addEventListener("visibilitychange", function(){ if (document.visibilityState==="visible") check(); });
+  setInterval(check, 60*60*1000);
+}
+
+/* ---------- boot ---------- */
+var nw=weekById(NOW_WK);
+document.getElementById("today").innerHTML = 'Today <b>'+esc(fmt(today))+'</b> · '+esc(nw?nw.lbl:"");
+(function(){
+  var nx=null; EXAMS.forEach(function(x){ if (!nx && x.target>now) nx=x; });
+  if (nx){ var td=new Date(nx.target.getFullYear(),nx.target.getMonth(),nx.target.getDate()); var dd=Math.round((td-today)/864e5);
+    document.getElementById("nextexam").textContent = "Next: "+nx.name+" in "+dd+" day"+(dd===1?"":"s"); }
+})();
+applyPrefs(); renderWeekbar(); renderSettings(); renderModules(); renderTimetable(); renderExams(); showTab(S.tab);
+setSync("local");
+if ("serviceWorker" in navigator) initUpdates().catch(function(){});
+})();
+</script>
+</body>
+</html>
