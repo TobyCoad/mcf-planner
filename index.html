@@ -338,9 +338,9 @@ var LEC = {
       "Simulation forecasting and price distributions","PCA for yield curves and vol term structures","LLMs for market prediction (non-examinable)"]
 };
 var SLOTS = [
-  {m:"SC",dow:1,t:"09:00",e:"11:00",ln:[1,2]}, {m:"NM",dow:1,t:"11:00",e:"12:00",ln:[1]},
-  {m:"FD",dow:2,t:"09:00",e:"11:00",ln:[1,2]}, {m:"NM",dow:2,t:"11:00",e:"12:00",ln:[2]},
-  {m:"CPP",dow:3,t:"10:00",e:"12:00",ln:[1,2]}, {m:"SFDA",dow:4,t:"10:00",e:"12:00",ln:[1,2]}
+  {m:"SC",dow:1,t:"09:00",e:"11:00",ln:[1,2],room:"L3"}, {m:"NM",dow:1,t:"11:00",e:"12:00",ln:[1],room:"L3"},
+  {m:"FD",dow:2,t:"09:00",e:"11:00",ln:[1,2],room:"L3"}, {m:"NM",dow:2,t:"11:00",e:"12:00",ln:[2],room:"L3"},
+  {m:"CPP",dow:3,t:"10:00",e:"12:00",ln:[1,2],room:"L3"}, {m:"SFDA",dow:4,t:"10:00",e:"12:00",ln:[1,2],room:"L3"}
 ];
 var CLS = {
   odd:{NM:{1:[2,"13:00","14:30","L3"],2:[3,"14:00","15:30","L3"]}, FD:{1:[2,"14:30","16:00","L3"],2:[5,"09:30","11:00","L5"]},
@@ -367,7 +367,7 @@ function ev(o){EV.push(o);return o;}
 var w, i;
 for (w=1; w<=8; w++) SLOTS.forEach(function(s){
   var ns = s.ln.map(function(l){return 2*(w-1)+l;});
-  ev({k:"lec",m:s.m,date:mt(w,s.dow),t:s.t,e:s.e,room:"L3",wk:"w"+w,
+  ev({k:"lec",m:s.m,date:mt(w,s.dow),t:s.t,e:s.e,room:s.room,wk:"w"+w,
       title:MODS[s.m].s+" "+(ns.length>1?"L"+ns[0]+"–"+ns[1]:"L"+ns[0]),
       sub:ns.map(function(n){return LEC[s.m][n-1];}).join(" · ")});
 });
@@ -999,7 +999,7 @@ function modCard(W, m){
   var parts=[], syn=(MS[W.id]||{})[m]||"";
   if (!syn && W.id==="w0"){ var s0=SLOTS.filter(function(x){return x.m===m;})[0]; syn="First lecture "+fmt(mt(1,s0.dow))+", "+s0.t+"."; }
   if (W.mtw && W.mtw<=8){
-    var when=SLOTS.filter(function(s){return s.m===m;}).map(function(s){return DOW[s.dow]+" "+s.t;}).join(" and ");
+    var when=SLOTS.filter(function(s){return s.m===m;}).map(function(s){return DOW[s.dow]+" "+s.t+" · "+s.room;}).join(" and ");
     parts.push('<div class="sub"><h4>Lectures · '+esc(when)+'</h4>'+[2*W.mtw-1,2*W.mtw].map(function(n){return lecRow(m,n);}).join("")+'</div>');
   }
   var evs=EV.filter(function(e){ return e.m===m && e.k!=="lec" && inWeek(evDate(e),W) && groupOk(e); }).sort(evOrder);
@@ -1069,7 +1069,7 @@ function renderTimetable(){
       var e=p.e, top=(p.s-H0)/60*HH, ht=Math.max((p.f-p.s)/60*HH-2,22);
       var sub = e.k==="lec" ? e.sub : (e.sub||"");
       return '<div class="ev" data-m="'+e.m+'" style="top:'+top+'px;height:'+ht+'px;left:calc('+(p.L*100/nL)+'% + 3px);width:calc('+(100/nL)+'% - 6px)">'+
-        '<span class="t">'+esc(e.t+"–"+e.e)+'</span><span class="ttl">'+esc(e.title)+'</span>'+(sub?'<span class="s">'+esc(sub)+'</span>':'')+'</div>';
+        '<span class="t">'+esc(e.t+"–"+e.e+(e.k==="lec"&&e.room?" · "+e.room:""))+'</span><span class="ttl">'+esc(e.title)+'</span>'+(sub?'<span class="s">'+esc(sub)+'</span>':'')+'</div>';
     }).join("");
     if (isT){ var nm=now.getHours()*60+now.getMinutes(); if (nm>=H0 && nm<=H1) blocks+='<div class="nowline" style="top:'+((nm-H0)/60*HH)+'px"></div>'; }
     var ad=allday.map(function(e){
