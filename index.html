@@ -19,7 +19,7 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=JetBrains+Mono:wght@400;600&display=swap">
 <style>
 :root{color-scheme:light}
-/* Layout: slim header, three sticky tabs. Modules = one card per course for the chosen week; Timetable = Mon–Fri time grid; Exams = countdowns, rules and the revision checklist. Module colours act as diary tabs. */
+/* Layout: slim header, sticky tabs. Modules = one card per course for the chosen week; Due = every hand-in and assessment, soonest first; Timetable = Mon–Fri time grid; Exams = countdowns, rules and the revision checklist. Module colours act as diary tabs. */
 :root{
   --bg:#F3F4F7; --card:#FFFFFF; --sunk:#ECEEF3; --ink:#141821; --ink-2:#4A5162; --ink-3:#737B8D; --rule:#E0E3EA; --rule-2:#C8CDD8;
   --accent:#2340B8; --on-accent:#FFFFFF; --now:#CF3529;
@@ -55,6 +55,12 @@ h1,h2,h3{font-family:var(--f-display);text-wrap:balance}
 
 .top{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:6px 16px;padding-bottom:10px}
 .top h1{font-size:clamp(28px,4.4vw,40px);font-weight:800;letter-spacing:-.02em;line-height:1}
+header.top{flex-wrap:nowrap;align-items:flex-start;gap:12px}
+.hd{flex:1;min-width:0;display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:6px 16px}
+.gear{flex:none;width:44px;height:44px;padding:0;border-radius:10px;border:1px solid var(--rule-2);background:var(--card);color:var(--ink-2);display:grid;place-items:center;cursor:pointer}
+.gear svg{width:22px;height:22px}
+.gear:hover{color:var(--ink)}
+.gear[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
 .meta{display:flex;flex-wrap:wrap;gap:6px 14px;align-items:center;font-family:var(--f-mono);font-size:12.5px;color:var(--ink-2)}
 .meta b{color:var(--now);font-weight:600}
 .sync{padding:2px 9px;border-radius:999px;border:1px solid var(--rule-2)}
@@ -197,6 +203,18 @@ h1,h2,h3{font-family:var(--f-display);text-wrap:balance}
 .xc dd{margin:0}
 .xc .ph4{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
 .wkt{font-family:var(--f-mono);font-size:11px;color:var(--ink-3);white-space:nowrap}
+.dl .dd{flex:none;width:86px;display:grid;line-height:1.3;padding-block:7px}
+.dl .dd b{font-size:15px}
+.dl .dd span{font-family:var(--f-mono);font-size:11.5px;color:var(--ink-3)}
+.dl[data-done="1"] .dd b{color:var(--ink-3);font-weight:400}
+.dl .meta2{flex-basis:100%}
+.dl .soon{color:var(--due);font-weight:600}
+.ck-sp{flex:none;width:44px}
+@media (max-width:520px){
+  .dl{flex-wrap:wrap;row-gap:0}
+  .dl .dd{flex:1;width:auto;display:flex;gap:8px;align-items:baseline;padding-block:8px 0}
+  .dl .txt{flex-basis:100%;padding:0 0 8px 50px}
+}
 .panel{background:var(--card);border:1px solid var(--rule);border-radius:12px;padding:16px;margin-top:12px}
 .panel h2{font-size:20px;font-weight:800;margin-bottom:6px}
 .panel ul{margin:0;padding-left:18px;display:grid;gap:6px;font-size:15px}
@@ -229,15 +247,18 @@ body{margin:0;padding-bottom:env(safe-area-inset-bottom,0px);-webkit-tap-highlig
 
 <div class="app" id="app">
   <header class="top">
-    <h1>Michaelmas 2026</h1>
-    <div class="meta"><span id="today">Today</span><span id="nextexam"></span><span class="sync" id="sync" data-s="wait">Connecting…</span></div>
+    <div class="hd">
+      <h1>Michaelmas 2026</h1>
+      <div class="meta"><span id="today">Today</span><span id="nextexam"></span><span class="sync" id="sync" data-s="wait">Connecting…</span></div>
+    </div>
+    <button class="gear" id="t-settings" data-act="tab" data-tab="settings" aria-controls="p-settings" aria-pressed="false" aria-label="Settings"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></button>
   </header>
 
   <nav class="tabs" role="tablist" aria-label="Views">
     <button class="tab" role="tab" id="t-modules" data-act="tab" data-tab="modules" aria-controls="p-modules">Modules</button>
+    <button class="tab" role="tab" id="t-due" data-act="tab" data-tab="due" aria-controls="p-due">Due</button>
     <button class="tab" role="tab" id="t-timetable" data-act="tab" data-tab="timetable" aria-controls="p-timetable">Timetable</button>
     <button class="tab" role="tab" id="t-exams" data-act="tab" data-tab="exams" aria-controls="p-exams">Exams</button>
-    <button class="tab" role="tab" id="t-settings" data-act="tab" data-tab="settings" aria-controls="p-settings">Settings</button>
   </nav>
 
   <div class="weekbar" id="weekbar">
@@ -251,6 +272,11 @@ body{margin:0;padding-bottom:env(safe-area-inset-bottom,0px);-webkit-tap-highlig
     <div class="wkhead" id="wkhead"></div>
     <p class="legend">Lectures: tap once for attended ◐, twice for reviewed ●. Pre-reading listed in a week is for the following week's lectures.</p>
     <div class="mods" id="mods"></div>
+  </section>
+
+  <section id="p-due" role="tabpanel" aria-labelledby="t-due" hidden>
+    <div class="wkhead"><div class="ph" id="due-head"></div><p class="tip">Every hand-in and assessment, soonest first; ones that have passed are below, latest first. Ticking one here ticks it in Modules too.</p></div>
+    <div id="due"></div>
   </section>
 
   <section id="p-timetable" role="tabpanel" aria-labelledby="t-timetable" hidden>
@@ -275,7 +301,7 @@ body{margin:0;padding-bottom:env(safe-area-inset-bottom,0px);-webkit-tap-highlig
     </div>
   </section>
 
-  <section id="p-settings" role="tabpanel" aria-labelledby="t-settings" hidden>
+  <section id="p-settings" aria-label="Settings" hidden>
     <div class="set">
       <div class="panel"><h2>Week summaries</h2><p class="hint">What each module card shows at the top in lecture weeks.</p><div id="set-sum"></div></div>
       <div class="panel"><h2>Pre-reading</h2><div id="set-pre"></div></div>
@@ -956,8 +982,8 @@ function mdTarget(m, t){
     if (e && !used[id]){                                  // the planner's estimate moves to Moodle's date
       used[id]=1;
       e.date=d; e.dates=null; e.tt=tt; e.wk=mdWeek(d)||e.wk; e.src="moodle";
-      var keep=e.sub && e.sub!=="Before your class";      // that one was only a guess at the timing
-      e.sub=(keep ? e.sub+" · " : "")+"On Moodle as “"+t+"”";
+      if (e.sub==="Before your class") e.sub="";          // that one was only a guess at the timing
+      e.mdName=t;
       ITEM[id].wk=weekById(e.wk);
       return;
     }
@@ -978,7 +1004,7 @@ var PREF_DEF = {tech:false, lay:true, layFirst:true, books:true, careers:true, o
 function cleanPrefs(p){
   var o={}; p=p||{};
   ["tech","lay","layFirst","books","careers"].forEach(function(k){ o[k] = (typeof p[k]==="boolean") ? p[k] : PREF_DEF[k]; });
-  o.openOn = ["last","modules","timetable","exams"].indexOf(p.openOn)>=0 ? p.openOn : PREF_DEF.openOn;
+  o.openOn = ["last","modules","due","timetable","exams"].indexOf(p.openOn)>=0 ? p.openOn : PREF_DEF.openOn;
   return o;
 }
 var S = {ticks:{}, notes:{}, groups:{}, prefs:cleanPrefs({}), tab:"modules", week:null};
@@ -1000,9 +1026,9 @@ var NOW_WK = (function(){
 })();
 S.week = NOW_WK;
 var hashTab = (location.hash||"").replace("#","");
-if (["modules","timetable","exams","settings"].indexOf(hashTab)>=0) S.tab = hashTab;
+if (["modules","due","timetable","exams","settings"].indexOf(hashTab)>=0) S.tab = hashTab;
 else if (S.prefs.openOn!=="last") S.tab = S.prefs.openOn;
-if (["modules","timetable","exams","settings"].indexOf(S.tab)<0) S.tab = "modules";
+if (["modules","due","timetable","exams","settings"].indexOf(S.tab)<0) S.tab = "modules";
 function cur(){ return weekById(S.week); }
 function evDate(e){ if(e.dates){var g=S.groups[e.gm];return e.dates[g===2?2:1];} return e.date; }
 function inWeek(d,W){ return d>=W.start && d<addDays(W.end,1); }
@@ -1031,9 +1057,10 @@ function taskRow(t){
 function evWhen(e){ var d=evDate(e); return fmt(d)+(e.t?" "+e.t+(e.e?"–"+e.e:""):(e.tt?" · "+e.tt:"")); }
 function dueRow(e){
   var tag = e.k==="exam"||e.crit ? ' <span class="tag crit">'+(e.k==="exam"?"assessment":"deadline")+'</span>' : (e.k==="due"?' <span class="tag due">due</span>':'');
-  if (!e.id) return '<div class="info"><span class="when">'+esc(evWhen(e))+'</span><span><b>'+esc(e.title)+'</b>'+tag+srcTag(e)+(e.sub?' · '+esc(e.sub):'')+'</span></div>';
+  var sub = [e.sub, e.mdName ? "On Moodle as “"+e.mdName+"”" : ""].filter(Boolean).join(" · ");
+  if (!e.id) return '<div class="info"><span class="when">'+esc(evWhen(e))+'</span><span><b>'+esc(e.title)+'</b>'+tag+srcTag(e)+(sub?' · '+esc(sub):'')+'</span></div>';
   return '<div class="item" data-tick="'+e.id+'">'+tickBtn(e.id,e.m,e.title,false)+
-    '<span class="txt"><span class="main strike"><b>'+esc(e.title)+'</b></span>'+tag+srcTag(e)+'<span class="meta2">'+esc(evWhen(e))+'</span>'+(e.sub?'<span class="meta2">'+esc(e.sub)+'</span>':'')+'</span></div>';
+    '<span class="txt"><span class="main strike"><b>'+esc(e.title)+'</b></span>'+tag+srcTag(e)+'<span class="meta2">'+esc(evWhen(e))+'</span>'+(sub?'<span class="meta2">'+esc(sub)+'</span>':'')+'</span></div>';
 }
 function lecRow(m,n){
   var id="lec:"+m+":"+n;
@@ -1166,6 +1193,35 @@ function renderExams(){
   applyTicks();
 }
 
+/* ---------- Due tab: every hand-in and assessment, nearest first ---------- */
+function dayDiff(d){ return Math.round((new Date(d.getFullYear(),d.getMonth(),d.getDate())-today)/864e5); }
+function inDays(n){ return n===0 ? "today" : n===1 ? "tomorrow" : n===-1 ? "yesterday" : n>0 ? "in "+n+" days" : (-n)+" days ago"; }
+function dueList(){ return EV.filter(function(e){ return e.k==="due" || e.k==="exam"; }); }
+function dueListRow(e){
+  var d=evDate(e), n=dayDiff(d), W=weekById(e.wk), time=e.t ? e.t+(e.e?"–"+e.e:"") : (e.tt||"");
+  var tag = (e.k==="exam" || e.crit) ? ' <span class="tag crit">assessment</span>' : '';
+  var rest = (W ? " · "+W.short : "")+(e.sub ? " · "+e.sub : "");
+  return '<div class="item dl"'+(e.id ? ' data-tick="'+e.id+'"' : '')+'>'+(e.id ? tickBtn(e.id,e.m,e.title,false) : '<span class="ck-sp"></span>')+
+    '<span class="dd"><b>'+esc(fmt(d))+'</b>'+(time ? '<span>'+esc(time)+'</span>' : '')+'</span>'+
+    '<span class="txt"><span class="main strike"><b>'+esc(e.title)+'</b></span>'+tag+srcTag(e)+
+    '<span class="meta2"><span'+(n>=0 && n<=7 ? ' class="soon"' : '')+'>'+esc(inDays(n))+'</span>'+esc(rest)+'</span></span></div>';
+}
+function renderDue(){
+  var all=dueList();
+  var up=all.filter(function(e){ return dayDiff(evDate(e))>=0; }).sort(evOrder);
+  var past=all.filter(function(e){ return dayDiff(evDate(e))<0; }).sort(evOrder).reverse();
+  document.getElementById("due").innerHTML =
+    '<div class="panel"><div class="sub" style="margin-top:0"><h4>Coming up</h4>'+(up.length ? up.map(dueListRow).join("") : '<p class="hint">Nothing left to hand in.</p>')+'</div></div>'+
+    (past.length ? '<div class="panel"><div class="sub" style="margin-top:0"><h4>Passed</h4>'+past.map(dueListRow).join("")+'</div></div>' : '');
+  applyTicks();
+}
+function renderDueHead(){
+  var el=document.getElementById("due-head"); if (!el) return;
+  var open=dueList().filter(function(e){ return dayDiff(evDate(e))>=0 && !(e.id && isDone(e.id)); }).sort(evOrder);
+  var nx=open[0];
+  el.innerHTML = nx ? 'Next: '+esc(nx.title)+'<span class="cnt">'+esc(inDays(dayDiff(evDate(nx)))+" · "+open.length+" still to come")+'</span>' : 'Nothing left to hand in';
+}
+
 /* ---------- ticks, progress ---------- */
 function isDone(id){ var s=S.ticks[id]||0; return id.indexOf("lec:")===0 ? s===2 : s>=1; }
 function applyTicks(){
@@ -1188,16 +1244,17 @@ function applyTicks(){
   document.querySelectorAll("#mods [data-tick]").forEach(function(el){ var id=el.dataset.tick; if (seen[id]) return; seen[id]=1; tot++; if (isDone(id)) dn++; });
   var wc=document.getElementById("wkcount"); if (wc) wc.textContent = tot ? dn+" of "+tot+" done" : "";
   EXAMS.forEach(function(x){ var el=document.querySelector('[data-xc="'+x.name+'"]'); if (el){ var d=x.prep.filter(isDone).length; el.textContent=d+" of "+x.prep.length+" done"; } });
+  renderDueHead();
 }
 
 /* ---------- tabs and week navigation ---------- */
 function showTab(t){
   S.tab=t; saveUI();
-  ["modules","timetable","exams","settings"].forEach(function(k){
+  ["modules","due","timetable","exams","settings"].forEach(function(k){
     document.getElementById("p-"+k).hidden = (k!==t);
-    document.getElementById("t-"+k).setAttribute("aria-selected", k===t?"true":"false");
+    document.getElementById("t-"+k).setAttribute(k==="settings" ? "aria-pressed" : "aria-selected", k===t?"true":"false");
   });
-  document.getElementById("weekbar").hidden = (t==="exams" || t==="settings");
+  document.getElementById("weekbar").hidden = (t==="due" || t==="exams" || t==="settings");
 }
 
 /* ---------- Settings tab ---------- */
@@ -1216,7 +1273,7 @@ function renderSettings(){
   document.getElementById("set-pre").innerHTML = swRow("books","Book sections","Show the Shreve and Baxter & Rennie references beside the course notes");
   document.getElementById("set-tt").innerHTML = swRow("careers","Careers events","Interview prep, careers seminars and the MCF seminar");
   document.getElementById("set-open").innerHTML = '<span class="seg" role="group" aria-label="Open on">'+
-    [["last","Last used"],["modules","Modules"],["timetable","Timetable"],["exams","Exams"]].map(function(x){
+    [["last","Last used"],["modules","Modules"],["due","Due"],["timetable","Timetable"],["exams","Exams"]].map(function(x){
       return '<button data-act="openon" data-v="'+x[0]+'" aria-pressed="'+(S.prefs.openOn===x[0]?"true":"false")+'">'+x[1]+'</button>';
     }).join("")+'</span>';
   renderGroups(); renderSyncNote();
@@ -1254,7 +1311,7 @@ document.addEventListener("click", function(evt){
   if (act==="grp"){
     var m=b.dataset.m, g=+b.dataset.g;
     if (S.groups[m]===g) delete S.groups[m]; else S.groups[m]=g;
-    renderGroups(); renderTimetable(); renderModules(); cache(); store.settings(); return;
+    renderGroups(); renderTimetable(); renderModules(); renderDue(); cache(); store.settings(); return;
   }
 });
 var noteTimers = {};
@@ -1304,7 +1361,7 @@ function restoreBackup(){
   var n={}; Object.keys(d.notes||{}).forEach(function(k){ if (weekById(k)) n[k]=String(d.notes[k]||""); });
   var g={}; ["SC","FD","NM","SFDA"].forEach(function(m){ var x=(d.groups||{})[m]; if (x===1||x===2) g[m]=x; });
   S.ticks=t; S.notes=n; S.groups=g; if (d.prefs) S.prefs=cleanPrefs(d.prefs);
-  cache(); applyPrefs(); renderSettings(); renderModules(); renderTimetable(); renderExams();
+  cache(); applyPrefs(); renderSettings(); renderModules(); renderTimetable(); renderExams(); renderDue();
   ta.value=""; msg.textContent="Restored "+Object.keys(t).length+" ticks and "+Object.keys(n).length+" notes.";
 }
 
@@ -1342,7 +1399,7 @@ document.getElementById("today").innerHTML = 'Today <b>'+esc(fmt(today))+'</b> �
   if (nx){ var td=new Date(nx.target.getFullYear(),nx.target.getMonth(),nx.target.getDate()); var dd=Math.round((td-today)/864e5);
     document.getElementById("nextexam").textContent = "Next: "+nx.name+" in "+dd+" day"+(dd===1?"":"s"); }
 })();
-applyPrefs(); renderWeekbar(); renderSettings(); renderModules(); renderTimetable(); renderExams(); showTab(S.tab);
+applyPrefs(); renderWeekbar(); renderSettings(); renderModules(); renderTimetable(); renderExams(); renderDue(); showTab(S.tab);
 setSync("local");
 if ("serviceWorker" in navigator) initUpdates().catch(function(){});
 document.getElementById("md-asof").textContent = fmt(mdDate(MOODLE.asOf));
