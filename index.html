@@ -217,7 +217,6 @@ h1,h2,h3{font-family:var(--f-display);text-wrap:balance}
 .srow[aria-checked="true"] .sw::after{transform:translateX(20px)}
 .syncnote{margin:0;font-size:14.5px;color:var(--ink-2)}
 .tag.md{color:var(--accent);border-color:color-mix(in srgb,var(--accent) 45%,transparent)}
-.pass{flex:1;min-width:0;min-height:40px;border:1px solid var(--rule-2);border-radius:8px;background:var(--bg);color:var(--ink);padding:0 12px;font:15px var(--f-body)}
 .nobooks .sp.bk{display:none}
 body{margin:0;padding-bottom:env(safe-area-inset-bottom,0px);-webkit-tap-highlight-color:transparent}
 .bk-row{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;margin-top:10px}
@@ -278,11 +277,6 @@ body{margin:0;padding-bottom:env(safe-area-inset-bottom,0px);-webkit-tap-highlig
 
   <section id="p-settings" role="tabpanel" aria-labelledby="t-settings" hidden>
     <div class="set">
-      <div class="panel"><h2>Moodle deadlines</h2><p class="syncnote" id="md-status"></p>
-        <div class="bk-row"><input class="pass" type="password" id="md-pass" placeholder="Passphrase" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" aria-label="Moodle passphrase"><button class="tog" data-act="md-save">Save and sync</button></div>
-        <div class="bk-row"><button class="tog" data-act="md-sync">Sync now</button><button class="tog" data-act="md-forget">Remove from this device</button></div>
-        <p class="hint" style="margin:10px 0 0">A GitHub job reads your Moodle calendar every three hours and publishes the deadlines encrypted with this passphrase. Moodle's dates replace the estimated ones and are marked <span class="tag md">Moodle</span>.</p>
-      </div>
       <div class="panel"><h2>Week summaries</h2><p class="hint">What each module card shows at the top in lecture weeks.</p><div id="set-sum"></div></div>
       <div class="panel"><h2>Pre-reading</h2><div id="set-pre"></div></div>
       <div class="panel"><h2>Class groups</h2><p class="hint">Both groups cover the same sheet. Pick yours to show only your slot in the timetable and module cards; leave unset to see both.</p><div class="grps" id="groups"></div></div>
@@ -296,7 +290,7 @@ body{margin:0;padding-bottom:env(safe-area-inset-bottom,0px);-webkit-tap-highlig
     </div>
   </section>
 
-  <p class="src">Lecture and class times come from the MT26 timetable; assessment dates and rules from the 2026–27 course calendar and handbook. Items tagged <span class="tag">est.</span> follow last year's (MT25) pattern and may move; <span class="tag">TBC</span> items will be set by the lecturers; <span class="tag md">Moodle</span> dates come from your Moodle calendar once it is connected in Settings. Stochastic Calculus topics follow last year's pace because the notes have no lecture breaks; Stats lecture splits inside each slide deck are approximate. Books: Shreve is <i>Stochastic Calculus for Finance II</i> (Springer, 2004) and Baxter &amp; Rennie is <i>Financial Calculus</i> (Cambridge); page numbers follow the standard printings. Note pages refer to last year's notes, so check them against this year's versions.</p>
+  <p class="src">Lecture and class times come from the MT26 timetable; assessment dates and rules from the 2026–27 course calendar and handbook. Items tagged <span class="tag">est.</span> follow last year's (MT25) pattern and may move; <span class="tag">TBC</span> items will be set by the lecturers; <span class="tag md">Moodle</span> dates are from the Moodle calendar as of <span id="md-asof">14 Oct</span>. Stochastic Calculus topics follow last year's pace because the notes have no lecture breaks; Stats lecture splits inside each slide deck are approximate. Books: Shreve is <i>Stochastic Calculus for Finance II</i> (Springer, 2004) and Baxter &amp; Rennie is <i>Financial Calculus</i> (Cambridge); page numbers follow the standard printings. Note pages refer to last year's notes, so check them against this year's versions.</p>
 </div>
 
 <script>
@@ -918,6 +912,67 @@ WEEKS.forEach(function(W){
 EV.forEach(function(e){ if (e.id) ITEM[e.id]={m:e.m,text:e.title,wk:weekById(e.wk),ev:e}; });
 for (var mm in LEC) for (var ln=1; ln<=16; ln++) ITEM["lec:"+mm+":"+ln]={m:mm,lec:true};
 
+/* ---------- Moodle deadlines: copied from a calendar export by tools/moodle-import.mjs ---------- */
+/* moodle:start */
+var MOODLE = {asOf:"2026-10-14", due:[
+ ["NM","Week 3 Class Assignment -- Problem Sheet 1","2026-10-22T11:00:00Z"],
+ ["FD","Week 3 Class Assignment","2026-10-23T11:00:00Z"],
+ ["SC","Week 3 Class Assignment","2026-10-27T12:00:00Z"],
+ ["FD","Week 5 Class Assignments","2026-11-06T12:00:00Z"],
+ ["SC","Class Signup registration","2026-11-07T12:00:00Z"],
+ ["FD","Class Signup registration","2026-11-07T12:00:00Z"],
+ ["NM","Class Signup registration","2026-11-07T12:00:00Z"],
+ ["SFDA","Class Signup registration","2026-11-07T12:00:00Z"],
+ ["CPP","Class Signup registration","2026-11-07T12:00:00Z"],
+ ["ADM","Class Signup registration","2026-11-07T12:00:00Z"],
+ ["ADM","Class Signup registration","2026-11-07T12:00:00Z"],
+ ["ADM","Class Signup registration","2026-11-07T12:00:00Z"],
+ ["ADM","Class Signup registration","2026-11-07T12:00:00Z"],
+ ["ADM","Class Signup registration","2026-11-07T12:00:00Z"],
+ ["ADM","Class Signup registration","2026-11-07T12:00:00Z"],
+ ["SC","Week 5 Class Assignment","2026-11-10T12:00:00Z"],
+ ["FD","Week 7 Class Assignments","2026-11-20T12:00:00Z"],
+ ["SC","Week 7 Class Assignment","2026-11-24T12:00:00Z"],
+ ["SC","Week 9 Class Assignment","2026-12-04T12:00:00Z"],
+ ["FD","Week 9 Class Assignment","2026-12-04T12:00:00Z"]
+]};
+/* moodle:end */
+function mdDate(s){ return s.length<=10 ? new Date(+s.slice(0,4), +s.slice(5,7)-1, +s.slice(8,10)) : new Date(s); }
+function mdHM(d){ return String(d.getHours()).padStart(2,"0")+":"+String(d.getMinutes()).padStart(2,"0"); }
+function mdWeek(d){ for (var j=0;j<WEEKS.length;j++) if (inWeek(d,WEEKS[j])) return WEEKS[j].id; return null; }
+// Which planner deadline a Moodle one replaces: "Week N Class Assignment" is the sheet for the week-N class.
+function mdTarget(m, t){
+  var w=(t.match(/Week\s*(\d+)/i)||[])[1];
+  if (w && ["SC","FD","NM","SFDA"].indexOf(m)>=0){ var sh=(+w-1)/2; if (sh>=1 && sh<=4 && sh===Math.floor(sh)) return m==="NM" ? "dl:nm"+sh : "hi:"+m+sh; }
+  var p=(t.match(/Practical\s*(\d+)/i)||[])[1];
+  if (p && m==="CPP"){ p=+p; return p<=2 ? "hi:cpp12" : (p<=4 ? "hi:cpp34" : (p<=6 ? "hi:cpp56" : "hi:cpp7")); }
+  return null;
+}
+(function(){
+  var byId={}, used={}, extras={}, order=[];
+  EV.forEach(function(e){ if (e.id) byId[e.id]=e; });
+  MOODLE.due.slice().sort(function(a,b){ return a[2]<b[2]?-1:(a[2]>b[2]?1:0); }).forEach(function(x){
+    var m=x[0], t=x[1], s=x[2], d=mdDate(s), tt=s.length>10 ? mdHM(d) : "", id=mdTarget(m,t), e=id ? byId[id] : null;
+    if (e && !used[id]){                                  // the planner's estimate moves to Moodle's date
+      used[id]=1;
+      e.date=d; e.dates=null; e.tt=tt; e.wk=mdWeek(d)||e.wk; e.src="moodle";
+      var keep=e.sub && e.sub!=="Before your class";      // that one was only a guess at the timing
+      e.sub=(keep ? e.sub+" · " : "")+"On Moodle as “"+t+"”";
+      ITEM[id].wk=weekById(e.wk);
+      return;
+    }
+    var key=t+"|"+s;                                      // one activity listed in several courses becomes one item
+    if (extras[key]){ extras[key].n++; return; }
+    extras[key]={m:m, t:t, s:s, d:d, tt:tt, n:1}; order.push(key);
+  });
+  order.forEach(function(key){
+    var o=extras[key], wk=mdWeek(o.d); if (!wk) return;
+    var m=o.n>1 ? "ADM" : o.m, id="md:"+o.t.toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"")+"-"+o.s.slice(0,10).replace(/-/g,"");
+    var add={k:"due", id:id, m:m, date:o.d, tt:o.tt, wk:wk, src:"moodle", title:o.t, sub:o.n>1 ? "Listed in "+o.n+" Moodle courses" : ""};
+    EV.push(add); ITEM[id]={m:m, text:o.t, wk:weekById(wk), ev:add};
+  });
+})();
+
 /* ---------- state ---------- */
 var PREF_DEF = {tech:false, lay:true, layFirst:true, books:true, careers:true, openOn:"last"};
 function cleanPrefs(p){
@@ -1164,7 +1219,7 @@ function renderSettings(){
     [["last","Last used"],["modules","Modules"],["timetable","Timetable"],["exams","Exams"]].map(function(x){
       return '<button data-act="openon" data-v="'+x[0]+'" aria-pressed="'+(S.prefs.openOn===x[0]?"true":"false")+'">'+x[1]+'</button>';
     }).join("")+'</span>';
-  renderGroups(); renderSyncNote(); renderMd();
+  renderGroups(); renderSyncNote();
 }
 function applyPrefs(){ app.classList.toggle("nobooks", !S.prefs.books); }
 function prefsChanged(){ applyPrefs(); renderSettings(); renderModules(); renderTimetable(); cache(); if (mode!=="ro") store.settings(); }
@@ -1185,18 +1240,6 @@ document.addEventListener("click", function(evt){
   if (act==="prev"){ var W=cur(); if (W.idx>0) goWeek(WEEKS[W.idx-1].id); return; }
   if (act==="next"){ var W2=cur(); if (W2.idx<WEEKS.length-1) goWeek(WEEKS[W2.idx+1].id); return; }
   if (act==="thisweek"){ goWeek(NOW_WK); return; }
-  if (act==="md-save"){
-    var pv=document.getElementById("md-pass").value.trim();
-    if (!pv){ MD.status="Enter the passphrase first."; renderMd(); return; }
-    try { localStorage.setItem(MD_KEY, pv); } catch(e){}
-    document.getElementById("md-pass").value=""; MD.status="Syncing…"; renderMd(); loadMoodle(); return;
-  }
-  if (act==="md-sync"){ MD.status="Syncing…"; renderMd(); loadMoodle(); return; }
-  if (act==="md-forget"){
-    try { localStorage.removeItem(MD_KEY); localStorage.removeItem(MD_CACHE); } catch(e){}
-    MD.events=null; applyMoodle(); MD.status="Moodle data and passphrase removed from this device.";
-    renderSettings(); renderModules(); renderTimetable(); renderExams(); return;
-  }
   if (act==="bk-copy"){ copyBackup(); return; }
   if (act==="bk-restore"){ restoreBackup(); return; }
   if (act==="pref"){ var k=b.dataset.k; S.prefs[k]=!S.prefs[k]; prefsChanged(); return; }
@@ -1257,111 +1300,13 @@ function restoreBackup(){
   if (!d || typeof d!=="object" || !d.ticks || typeof d.ticks!=="object"){ msg.textContent="That isn't a valid backup. Paste the whole text you copied."; return; }
   if (Date.now()-restoreArmed > 6000){ restoreArmed=Date.now(); btn.textContent="Tap again to replace your current progress"; return; }
   restoreArmed=0; btn.textContent="Restore from pasted backup";
-  var t={}; Object.keys(d.ticks).forEach(function(k){ var v=d.ticks[k]; if ((v===1||v===2) && (ITEM[k] || k.indexOf("md:")===0)) t[k]=v; });
+  var t={}; Object.keys(d.ticks).forEach(function(k){ var v=d.ticks[k]; if ((v===1||v===2) && ITEM[k]) t[k]=v; });
   var n={}; Object.keys(d.notes||{}).forEach(function(k){ if (weekById(k)) n[k]=String(d.notes[k]||""); });
   var g={}; ["SC","FD","NM","SFDA"].forEach(function(m){ var x=(d.groups||{})[m]; if (x===1||x===2) g[m]=x; });
   S.ticks=t; S.notes=n; S.groups=g; if (d.prefs) S.prefs=cleanPrefs(d.prefs);
   cache(); applyPrefs(); renderSettings(); renderModules(); renderTimetable(); renderExams();
   ta.value=""; msg.textContent="Restored "+Object.keys(t).length+" ticks and "+Object.keys(n).length+" notes.";
 }
-
-/* ---------- Moodle deadlines: fetched by the GitHub job, decrypted here ---------- */
-var MD_KEY="mt26-mdkey", MD_CACHE="mt26-moodle";
-var MD = {events:null, fetched:null, status:"", groups:{}, shown:0};
-var mdLast = 0;
-function mdB64(s){ var bin=atob(s), a=new Uint8Array(bin.length); for (var i=0;i<bin.length;i++) a[i]=bin.charCodeAt(i); return a; }
-async function mdDecrypt(box, pass){
-  var base=await crypto.subtle.importKey("raw", new TextEncoder().encode(pass), "PBKDF2", false, ["deriveKey"]);
-  var key=await crypto.subtle.deriveKey({name:"PBKDF2", salt:mdB64(box.salt), iterations:box.iter, hash:"SHA-256"}, base, {name:"AES-GCM", length:256}, false, ["decrypt"]);
-  var pt=await crypto.subtle.decrypt({name:"AES-GCM", iv:mdB64(box.iv)}, key, mdB64(box.ct));
-  return JSON.parse(new TextDecoder().decode(pt));
-}
-function mdDate(s){ return s.length<=10 ? new Date(+s.slice(0,4), +s.slice(5,7)-1, +s.slice(8,10)) : new Date(s); }
-function mdHM(d){ return String(d.getHours()).padStart(2,"0")+":"+String(d.getMinutes()).padStart(2,"0"); }
-function mdWeek(d){ for (var j=0;j<WEEKS.length;j++) if (d>=WEEKS[j].start && d<addDays(WEEKS[j].end,1)) return WEEKS[j].id; return null; }
-function fmtWhen(iso){ var d=new Date(iso); return isNaN(d) ? "recently" : fmt(d)+" "+mdHM(d); }
-// Which planner deadline a Moodle "… is due" event replaces: "Week N Class Assignment" is the sheet for the week-N class.
-function mdTarget(x){
-  var w=(x.t.match(/Week\s*(\d+)/i)||[])[1];
-  if (w && ["SC","FD","NM","SFDA"].indexOf(x.m)>=0){ var sh=(+w-1)/2; if (sh>=1 && sh<=4 && sh===Math.floor(sh)) return x.m==="NM" ? "dl:nm"+sh : "hi:"+x.m+sh; }
-  var p=(x.t.match(/Practical\s*(\d+)/i)||[])[1];
-  if (p && x.m==="CPP"){ p=+p; return p<=2 ? "hi:cpp12" : (p<=4 ? "hi:cpp34" : (p<=6 ? "hi:cpp56" : "hi:cpp7")); }
-  return null;
-}
-function applyMoodle(){
-  for (var i=EV.length-1;i>=0;i--){                     // undo the previous application first
-    var e=EV[i];
-    if (e.mdExtra){ EV.splice(i,1); delete ITEM[e.id]; }
-    else if (e._orig){ for (var k in e._orig) e[k]=e._orig[k]; delete e._orig; delete e.md; if (ITEM[e.id]) ITEM[e.id].wk=weekById(e.wk); }
-  }
-  MD.groups={}; MD.shown=0;
-  if (!MD.events) return;
-  var byId={}; EV.forEach(function(e){ if (e.id) byId[e.id]=e; });
-  var used={}, extras={}, order=[];
-  MD.events.filter(function(x){ return x.k==="due"; }).sort(function(a,b){ return a.s<b.s?-1:(a.s>b.s?1:0); }).forEach(function(x){
-    var d=mdDate(x.s), id=mdTarget(x), e=id ? byId[id] : null;
-    if (e && !used[id]){
-      used[id]=1; MD.shown++;
-      e._orig={date:e.date, dates:e.dates, tt:e.tt, wk:e.wk, src:e.src, sub:e.sub};
-      e.md=d; e.date=d; e.dates=null; e.tt=mdHM(d); e.wk=mdWeek(d)||e.wk; e.src="moodle";
-      var keep=e.sub && e.sub!=="Before your class";      // that one was only a guess at the timing
-      e.sub=(keep ? e.sub+" · " : "")+"On Moodle as “"+x.t.replace(/ is due$/i,"")+"”";
-      if (ITEM[id]) ITEM[id].wk=weekById(e.wk);
-      return;
-    }
-    var key=x.t+"|"+x.s;                                  // one activity listed in several courses becomes one item
-    if (extras[key]){ extras[key].n++; return; }
-    extras[key]={x:x, d:d, n:1}; order.push(key);
-  });
-  order.forEach(function(key){
-    var o=extras[key], x=o.x, wk=mdWeek(o.d); if (!wk) return;
-    var m=o.n>1 ? "ADM" : x.m, id="md:"+x.uid;
-    var add={k:"due", id:id, m:m, date:o.d, md:o.d, tt:mdHM(o.d), wk:wk, src:"moodle", mdExtra:true,
-      title:x.t.replace(/ is due$/i,""), sub:o.n>1 ? "Listed in "+o.n+" Moodle courses" : x.c};
-    EV.push(add); ITEM[id]={m:m, text:add.title, wk:weekById(wk), ev:add}; MD.shown++;
-  });
-  var gs={};
-  MD.events.forEach(function(x){ if (x.k==="attend" && x.g && ["SC","FD","NM","SFDA"].indexOf(x.m)>=0) (gs[x.m]=gs[x.m]||{})[x.g]=1; });
-  Object.keys(gs).forEach(function(m){ var ks=Object.keys(gs[m]); if (ks.length===1) MD.groups[m]=+ks[0]; });
-}
-function setMoodle(data, note){
-  MD.events=Array.isArray(data.events) ? data.events : []; MD.fetched=data.fetched;
-  applyMoodle();
-  var filled=[];                                          // Moodle's class groups fill any you haven't set
-  Object.keys(MD.groups).forEach(function(m){ if (!S.groups[m]){ S.groups[m]=MD.groups[m]; filled.push(m); } });
-  if (filled.length) cache();
-  var gtxt=["SC","FD","NM","SFDA"].filter(function(m){ return MD.groups[m]; }).map(function(m){ return MODS[m].s+" "+MD.groups[m]; }).join(", ");
-  MD.status=(note || ("Synced: "+MD.shown+" deadline"+(MD.shown===1?"":"s")+" from Moodle, fetched "+fmtWhen(data.fetched)+"."))+
-    (gtxt ? " Your class groups on Moodle: "+gtxt+"." : "")+(filled.length ? " These are now set under Class groups." : "");
-  renderSettings(); renderModules(); renderTimetable(); renderExams();
-}
-function mdFallback(why, none){
-  var c=lsGet(MD_CACHE);
-  if (c && c.events) setMoodle(c, why+" Showing the copy fetched "+fmtWhen(c.fetched)+".");
-  else { MD.status=none; renderMd(); }
-}
-async function loadMoodle(){
-  var pass=null; try { pass=localStorage.getItem(MD_KEY); } catch(e){}
-  if (!pass){ if (!MD.events){ MD.status="Not connected. Enter the passphrase you saved as PLANNER_KEY in GitHub."; renderMd(); } return; }
-  if (!(window.crypto && crypto.subtle)){ MD.status="This browser can't decrypt the Moodle data."; renderMd(); return; }
-  mdLast=Date.now();
-  if (!MD.events){ MD.status="Syncing…"; renderMd(); }
-  var box=null;
-  try {
-    var r=await fetch("data/moodle.json.enc?t="+Date.now(), {cache:"no-store"});
-    if (r.status===404){ mdFallback("The site has no Moodle file at the moment.", "No Moodle data on the site yet. It appears once the GitHub job has run with both secrets set."); return; }
-    if (!r.ok) throw new Error("HTTP "+r.status);
-    box=await r.json();
-  } catch(e){
-    mdFallback("Couldn't reach the site.", "Couldn't reach the site to fetch Moodle deadlines.");
-    return;
-  }
-  var data;
-  try { data=await mdDecrypt(box, pass); }
-  catch(e){ MD.status="That passphrase doesn't unlock the Moodle data. It must match the PLANNER_KEY secret in GitHub."; renderMd(); return; }
-  lsSet(MD_CACHE, data); setMoodle(data, null);
-}
-function renderMd(){ var el=document.getElementById("md-status"); if (el) el.textContent=MD.status; }
 
 /* ---------- updates: a new deploy shows a pill; tapping it reloads ---------- */
 function showUpdatePill(reg){
@@ -1400,14 +1345,7 @@ document.getElementById("today").innerHTML = 'Today <b>'+esc(fmt(today))+'</b> �
 applyPrefs(); renderWeekbar(); renderSettings(); renderModules(); renderTimetable(); renderExams(); showTab(S.tab);
 setSync("local");
 if ("serviceWorker" in navigator) initUpdates().catch(function(){});
-(function(){                                              // last synced copy at once, then check for a newer one
-  var c=lsGet(MD_CACHE), has=false; try { has=!!localStorage.getItem(MD_KEY); } catch(e){}
-  if (has && c && c.events) setMoodle(c, "Checking for newer deadlines. Showing the copy fetched "+fmtWhen(c.fetched)+".");
-  loadMoodle();
-  document.addEventListener("visibilitychange", function(){
-    if (document.visibilityState==="visible" && Date.now()-mdLast>30*60*1000) loadMoodle();
-  });
-})();
+document.getElementById("md-asof").textContent = fmt(mdDate(MOODLE.asOf));
 })();
 </script>
 </body>
