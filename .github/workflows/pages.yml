@@ -4,7 +4,7 @@ on:
   push:
     branches: [main]
   schedule:
-    - cron: "23 */3 * * *"   # every three hours: refresh the Moodle deadlines
+    - cron: "7 12 * * *"     # refresh the Moodle deadlines daily at 12:07 UTC (midday UK; 13:07 in summer time)
   workflow_dispatch:
 
 permissions:

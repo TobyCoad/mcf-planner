@@ -316,7 +316,7 @@ body{margin:0;padding-bottom:env(safe-area-inset-bottom,0px);-webkit-tap-highlig
     </div>
   </section>
 
-  <p class="src">Lecture and class times come from the MT26 timetable; assessment dates and rules from the 2026–27 course calendar and handbook. Items tagged <span class="tag">est.</span> follow last year's (MT25) pattern and may move; <span class="tag">TBC</span> items will be set by the lecturers; <span class="tag md">Moodle</span> dates come from the Moodle calendar, which is checked every three hours (last checked <span class="md-asof">14 Oct</span>). Stochastic Calculus topics follow last year's pace because the notes have no lecture breaks; Stats lecture splits inside each slide deck are approximate. Books: Shreve is <i>Stochastic Calculus for Finance II</i> (Springer, 2004) and Baxter &amp; Rennie is <i>Financial Calculus</i> (Cambridge); page numbers follow the standard printings. Note pages refer to last year's notes, so check them against this year's versions.</p>
+  <p class="src">Lecture and class times come from the MT26 timetable; assessment dates and rules from the 2026–27 course calendar and handbook. Items tagged <span class="tag">est.</span> follow last year's (MT25) pattern and may move; <span class="tag">TBC</span> items will be set by the lecturers; <span class="tag md">Moodle</span> dates come from the Moodle calendar, which is checked once a day at midday (last checked <span class="md-asof">14 Oct</span>). Stochastic Calculus topics follow last year's pace because the notes have no lecture breaks; Stats lecture splits inside each slide deck are approximate. Books: Shreve is <i>Stochastic Calculus for Finance II</i> (Springer, 2004) and Baxter &amp; Rennie is <i>Financial Calculus</i> (Cambridge); page numbers follow the standard printings. Note pages refer to last year's notes, so check them against this year's versions.</p>
 </div>
 
 <script>
@@ -939,7 +939,7 @@ EV.forEach(function(e){ if (e.id) ITEM[e.id]={m:e.m,text:e.title,wk:weekById(e.w
 for (var mm in LEC) for (var ln=1; ln<=16; ln++) ITEM["lec:"+mm+":"+ln]={m:mm,lec:true};
 
 /* ---------- Moodle deadlines ----------
-   The scheduled job publishes moodle.json every three hours and the app fetches it on open.
+   The scheduled job publishes moodle.json once a day at midday and the app fetches it on open.
    The block below is the built-in copy (tools/moodle-import.mjs writes it) for before the first fetch. */
 /* moodle:start */
 var MOODLE = {asOf:"2026-10-14", due:[
