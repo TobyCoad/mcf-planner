@@ -275,7 +275,7 @@ body{margin:0;padding-bottom:env(safe-area-inset-bottom,0px);-webkit-tap-highlig
   </section>
 
   <section id="p-due" role="tabpanel" aria-labelledby="t-due" hidden>
-    <div class="wkhead"><div class="ph" id="due-head"></div><p class="tip">Every hand-in and assessment, soonest first; ones that have passed are below, latest first. Ticking one here ticks it in Modules too.</p></div>
+    <div class="wkhead"><div class="ph" id="due-head"></div><p class="tip">Every hand-in and assessment, soonest first; ones that have passed are below, latest first. Ticking one here ticks it in Modules too. Moodle last checked <span class="md-asof">14 Oct</span>.</p></div>
     <div id="due"></div>
   </section>
 
@@ -316,7 +316,7 @@ body{margin:0;padding-bottom:env(safe-area-inset-bottom,0px);-webkit-tap-highlig
     </div>
   </section>
 
-  <p class="src">Lecture and class times come from the MT26 timetable; assessment dates and rules from the 2026–27 course calendar and handbook. Items tagged <span class="tag">est.</span> follow last year's (MT25) pattern and may move; <span class="tag">TBC</span> items will be set by the lecturers; <span class="tag md">Moodle</span> dates are from the Moodle calendar as of <span id="md-asof">14 Oct</span>. Stochastic Calculus topics follow last year's pace because the notes have no lecture breaks; Stats lecture splits inside each slide deck are approximate. Books: Shreve is <i>Stochastic Calculus for Finance II</i> (Springer, 2004) and Baxter &amp; Rennie is <i>Financial Calculus</i> (Cambridge); page numbers follow the standard printings. Note pages refer to last year's notes, so check them against this year's versions.</p>
+  <p class="src">Lecture and class times come from the MT26 timetable; assessment dates and rules from the 2026–27 course calendar and handbook. Items tagged <span class="tag">est.</span> follow last year's (MT25) pattern and may move; <span class="tag">TBC</span> items will be set by the lecturers; <span class="tag md">Moodle</span> dates come from the Moodle calendar, which is checked every three hours (last checked <span class="md-asof">14 Oct</span>). Stochastic Calculus topics follow last year's pace because the notes have no lecture breaks; Stats lecture splits inside each slide deck are approximate. Books: Shreve is <i>Stochastic Calculus for Finance II</i> (Springer, 2004) and Baxter &amp; Rennie is <i>Financial Calculus</i> (Cambridge); page numbers follow the standard printings. Note pages refer to last year's notes, so check them against this year's versions.</p>
 </div>
 
 <script>
@@ -938,7 +938,9 @@ WEEKS.forEach(function(W){
 EV.forEach(function(e){ if (e.id) ITEM[e.id]={m:e.m,text:e.title,wk:weekById(e.wk),ev:e}; });
 for (var mm in LEC) for (var ln=1; ln<=16; ln++) ITEM["lec:"+mm+":"+ln]={m:mm,lec:true};
 
-/* ---------- Moodle deadlines: copied from a calendar export by tools/moodle-import.mjs ---------- */
+/* ---------- Moodle deadlines ----------
+   The scheduled job publishes moodle.json every three hours and the app fetches it on open.
+   The block below is the built-in copy (tools/moodle-import.mjs writes it) for before the first fetch. */
 /* moodle:start */
 var MOODLE = {asOf:"2026-10-14", due:[
  ["NM","Week 3 Class Assignment -- Problem Sheet 1","2026-10-22T11:00:00Z"],
@@ -974,13 +976,18 @@ function mdTarget(m, t){
   if (p && m==="CPP"){ p=+p; return p<=2 ? "hi:cpp12" : (p<=4 ? "hi:cpp34" : (p<=6 ? "hi:cpp56" : "hi:cpp7")); }
   return null;
 }
-(function(){
+var MD_CACHE="mt26-moodle", mdRows=null, mdMoved=[], mdChecked=null, mdLast=0;
+function applyMoodle(rows){
+  mdMoved.forEach(function(x){ for (var k in x.orig) x.e[k]=x.orig[k]; ITEM[x.e.id].wk=weekById(x.e.wk); });  // undo the last set first
+  mdMoved=[];
+  for (var i=EV.length-1;i>=0;i--) if (EV[i].mdExtra){ delete ITEM[EV[i].id]; EV.splice(i,1); }
   var byId={}, used={}, extras={}, order=[];
   EV.forEach(function(e){ if (e.id) byId[e.id]=e; });
-  MOODLE.due.slice().sort(function(a,b){ return a[2]<b[2]?-1:(a[2]>b[2]?1:0); }).forEach(function(x){
+  rows.slice().sort(function(a,b){ return a[2]<b[2]?-1:(a[2]>b[2]?1:0); }).forEach(function(x){
     var m=x[0], t=x[1], s=x[2], d=mdDate(s), tt=s.length>10 ? mdHM(d) : "", id=mdTarget(m,t), e=id ? byId[id] : null;
     if (e && !used[id]){                                  // the planner's estimate moves to Moodle's date
       used[id]=1;
+      mdMoved.push({e:e, orig:{date:e.date, dates:e.dates, tt:e.tt, wk:e.wk, src:e.src, sub:e.sub, mdName:e.mdName}});
       e.date=d; e.dates=null; e.tt=tt; e.wk=mdWeek(d)||e.wk; e.src="moodle";
       if (e.sub==="Before your class") e.sub="";          // that one was only a guess at the timing
       e.mdName=t;
@@ -994,10 +1001,13 @@ function mdTarget(m, t){
   order.forEach(function(key){
     var o=extras[key], wk=mdWeek(o.d); if (!wk) return;
     var m=o.n>1 ? "ADM" : o.m, id="md:"+o.t.toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"")+"-"+o.s.slice(0,10).replace(/-/g,"");
-    var add={k:"due", id:id, m:m, date:o.d, tt:o.tt, wk:wk, src:"moodle", title:o.t, sub:o.n>1 ? "Listed in "+o.n+" Moodle courses" : ""};
+    var add={k:"due", id:id, m:m, date:o.d, tt:o.tt, wk:wk, src:"moodle", mdExtra:true, title:o.t, sub:o.n>1 ? "Listed in "+o.n+" Moodle courses" : ""};
     EV.push(add); ITEM[id]={m:m, text:o.t, wk:weekById(wk), ev:add};
   });
-})();
+  mdRows=rows;
+}
+function mdFresh(c){ return c && Array.isArray(c.due) && typeof c.checked==="string" && c.checked.slice(0,10)>=MOODLE.asOf; }
+(function(){ var c=lsGet(MD_CACHE); if (mdFresh(c)){ mdChecked=c.checked; applyMoodle(c.due); } else applyMoodle(MOODLE.due); })();
 
 /* ---------- state ---------- */
 var PREF_DEF = {tech:false, lay:true, layFirst:true, books:true, careers:true, openOn:"last"};
@@ -1365,6 +1375,30 @@ function restoreBackup(){
   ta.value=""; msg.textContent="Restored "+Object.keys(t).length+" ticks and "+Object.keys(n).length+" notes.";
 }
 
+/* ---------- Moodle: fetch what the scheduled job published ---------- */
+async function loadMoodle(){
+  mdLast=Date.now();
+  var data;
+  try {
+    var r=await fetch("moodle.json?t="+Date.now(), {cache:"no-store"});
+    if (!r.ok) return;                                    // not published yet: keep what we have
+    data=await r.json();
+  } catch(e){ return; }                                   // offline: keep what we have
+  if (!mdFresh(data)) return;
+  lsSet(MD_CACHE, data); mdChecked=data.checked;
+  if (JSON.stringify(data.due)!==JSON.stringify(mdRows)){
+    applyMoodle(data.due);
+    var typing=document.activeElement && document.activeElement.tagName==="TEXTAREA";
+    if (!typing) renderModules();                         // don't pull a note out from under the cursor
+    renderTimetable(); renderExams(); renderDue();
+  }
+  renderMdAsOf();
+}
+function renderMdAsOf(){
+  var d=mdChecked ? new Date(mdChecked) : mdDate(MOODLE.asOf), txt=fmt(d)+(mdChecked ? ", "+mdHM(d) : "");
+  document.querySelectorAll(".md-asof").forEach(function(el){ el.textContent=txt; });
+}
+
 /* ---------- updates: a new deploy shows a pill; tapping it reloads ---------- */
 function showUpdatePill(reg){
   if (document.getElementById("update-pill")) return;
@@ -1402,7 +1436,10 @@ document.getElementById("today").innerHTML = 'Today <b>'+esc(fmt(today))+'</b> �
 applyPrefs(); renderWeekbar(); renderSettings(); renderModules(); renderTimetable(); renderExams(); renderDue(); showTab(S.tab);
 setSync("local");
 if ("serviceWorker" in navigator) initUpdates().catch(function(){});
-document.getElementById("md-asof").textContent = fmt(mdDate(MOODLE.asOf));
+renderMdAsOf(); loadMoodle();
+document.addEventListener("visibilitychange", function(){
+  if (document.visibilityState==="visible" && Date.now()-mdLast>30*60*1000) loadMoodle();
+});
 })();
 </script>
 </body>

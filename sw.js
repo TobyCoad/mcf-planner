@@ -1,6 +1,6 @@
 // Cache-first service worker. Bump CACHE_VERSION on every deploy:
 // the byte change makes the app show its "update ready" pill.
-const CACHE_VERSION = 'v5';
+const CACHE_VERSION = 'v6';
 const CACHE_NAME = `mcf-planner-${CACHE_VERSION}`;
 const FONT_CACHE = 'mcf-planner-fonts';
 const PRECACHE = ['./', 'index.html', 'manifest.webmanifest',
@@ -36,6 +36,8 @@ self.addEventListener('fetch', (event) => {
     return;
   }
   if (url.origin !== self.location.origin) return;
+  // The Moodle deadlines change: always fetch them (the app keeps its own offline copy).
+  if (url.pathname.endsWith("/moodle.json")) return;
   event.respondWith(caches.match(req, { ignoreSearch: true }).then((cached) => {
     if (cached) return cached;
     return fetch(req).then((res) => {

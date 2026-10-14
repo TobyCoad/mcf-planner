@@ -3,6 +3,8 @@ name: Deploy to GitHub Pages
 on:
   push:
     branches: [main]
+  schedule:
+    - cron: "23 */3 * * *"   # every three hours: refresh the Moodle deadlines
   workflow_dispatch:
 
 permissions:
@@ -22,7 +24,17 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/configure-pages@v5
+      - id: pages
+        uses: actions/configure-pages@v5
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      # Writes moodle.json. Skips quietly until the MOODLE_ICAL_URL secret is set.
+      - name: Fetch Moodle deadlines
+        env:
+          MOODLE_ICAL_URL: ${{ secrets.MOODLE_ICAL_URL }}
+          PREV_URL: ${{ steps.pages.outputs.base_url }}/moodle.json
+        run: node tools/moodle-sync.mjs moodle.json
       - uses: actions/upload-pages-artifact@v3
         with:
           path: .
