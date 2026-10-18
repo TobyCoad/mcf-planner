@@ -1,6 +1,6 @@
 // Cache-first service worker. Bump CACHE_VERSION on every deploy:
 // the byte change makes the app show its "update ready" pill.
-const CACHE_VERSION = 'v7';
+const CACHE_VERSION = 'v8';
 const CACHE_NAME = `mcf-planner-${CACHE_VERSION}`;
 const FONT_CACHE = 'mcf-planner-fonts';
 const PRECACHE = ['./', 'index.html', 'manifest.webmanifest',
